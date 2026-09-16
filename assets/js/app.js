@@ -208,8 +208,9 @@
   function formatPeriod(from, to) {
     var a = parseDay(from), b = parseDay(to);
     if (!a) return "";
-    var day = function (d) { return d.getDate(); };
-    var full = function (d) { return d.getDate() + " " + MOIS[d.getMonth()] + " " + d.getFullYear(); };
+    // Le premier du mois s'écrit « 1er », pas « 1 ».
+    var day = function (d) { return d.getDate() === 1 ? "1er" : d.getDate(); };
+    var full = function (d) { return day(d) + " " + MOIS[d.getMonth()] + " " + d.getFullYear(); };
     if (!b || a.getTime() === b.getTime()) return "le " + full(a);
     if (a.getFullYear() !== b.getFullYear()) return "du " + full(a) + " au " + full(b);
     if (a.getMonth() !== b.getMonth()) {

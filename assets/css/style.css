@@ -521,11 +521,11 @@ html.snap .tl-entry{ scroll-snap-align:center; }
 .tl-wrap{
   max-width:var(--wrap); margin:0 auto;
   padding:0 var(--gutter) clamp(60px,9vw,120px);
-  display:grid; grid-template-columns:minmax(0,1fr) 380px;
+  display:grid; grid-template-columns:minmax(0,1fr) 418px;
   gap:clamp(24px,4vw,56px); align-items:start;
 }
 .tl-globe{ position:sticky; top:clamp(90px,12vh,130px); order:2; }
-.tl-globe-inner{ position:relative; width:min(100%, 46vh, 380px); aspect-ratio:1/1; margin-inline:auto; }
+.tl-globe-inner{ position:relative; width:min(100%, 50vh, 418px); aspect-ratio:1/1; margin-inline:auto; }
 .tl-track{ position:relative; order:1; padding-left:30px; }
 /* Le fil qui relie les étapes */
 .tl-track::before{
@@ -575,12 +575,17 @@ html.snap .tl-entry{ scroll-snap-align:center; }
   .tl-wrap{ grid-template-columns:1fr; gap:0; }
   .tl-globe{
     position:sticky; top:52px; z-index:5; order:1;
-    margin:0 calc(var(--gutter) * -1) 4px; padding:8px 0 26px;
-    /* La zone opaque doit couvrir toute la sphère : sinon une entrée qui
-       défile dessous transparaît au travers du globe. */
-    background:linear-gradient(180deg, var(--paper) 86%, rgba(236,230,216,0));
+    margin:0 calc(var(--gutter) * -1) 4px; padding:8px 0 22px;
   }
-  .tl-globe-inner{ width:min(52vw,230px); }
+  .tl-globe::before{
+    content:""; position:absolute; inset:-70px 0 -26px; z-index:-1;
+    background:linear-gradient(180deg,
+      var(--paper) 44%, rgba(236,230,216,.62) 76%, rgba(236,230,216,0) 100%);
+    -webkit-backdrop-filter:blur(7px); backdrop-filter:blur(7px);
+    -webkit-mask-image:linear-gradient(180deg, #000 64%, transparent 100%);
+    mask-image:linear-gradient(180deg, #000 64%, transparent 100%);
+  }
+  .tl-globe-inner{ width:min(57vw,253px); }
   .tl-track{ order:2; }
   .tl-card{ grid-template-columns:92px minmax(0,1fr); }
   .tl-thumb{ width:92px; }

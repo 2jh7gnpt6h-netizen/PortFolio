@@ -4,6 +4,8 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Rémy — Carnets</title>
+<meta name="description" content="Carnets de voyage photographiques — un lieu, une lumière, quelques images qui restent.">
+<meta name="theme-color" content="#ece6d8">
 <link rel="icon" href="data:,">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -12,9 +14,9 @@
 </head>
 <body>
 
-<header class="top">
+<header class="top" id="topBar">
   <a href="#home" class="brand" data-nav="home">Rémy</a>
-  <nav class="nav" id="mainNav">
+  <nav class="nav glass" id="mainNav">
     <a href="#home" data-nav="home" data-view="home">Carnets</a>
     <a href="#expositions" data-nav="expositions" data-view="expositions">Expositions</a>
     <a href="#carte" data-nav="carte" data-view="carte">Carte</a>
@@ -23,14 +25,38 @@
 
 <main id="root"></main>
 
-<div class="lightbox" id="lightbox" aria-hidden="true">
-  <button class="lightbox-close" id="lightboxClose">Fermer ✕</button>
-  <button class="lightbox-info-btn" id="lightboxInfo">Détails</button>
-  <img id="lightboxImg" src="" alt="">
-  <div class="meta-panel" id="metaPanel"></div>
+<!-- Intro : globe en avant-plan, site flouté derrière -->
+<div class="intro" id="intro" hidden>
+  <div class="intro-veil"></div>
+  <div class="intro-stage">
+    <canvas id="introGlobe" class="globe-canvas"></canvas>
+    <div class="globe-tip glass" id="introTip" aria-hidden="true"></div>
+  </div>
+  <div class="intro-ui">
+    <p class="intro-kicker">Carnets de voyage</p>
+    <h1 class="intro-title serif">Des lieux traversés,<br>gardés en images.</h1>
+    <p class="intro-hint">Faites tourner le globe — touchez un pays pour ouvrir son carnet.</p>
+    <button class="intro-enter glass" id="introEnter">Entrer <span aria-hidden="true">↓</span></button>
+  </div>
 </div>
 
+<div class="lightbox" id="lightbox" aria-hidden="true" role="dialog" aria-modal="true" aria-label="Photographie en plein écran">
+  <button class="lb-btn lb-close glass" id="lightboxClose" aria-label="Fermer">Fermer ✕</button>
+  <button class="lb-btn lb-info glass" id="lightboxInfo" aria-label="Détails de la photographie">Détails</button>
+  <button class="lb-nav lb-prev glass" id="lightboxPrev" aria-label="Photographie précédente">←</button>
+  <button class="lb-nav lb-next glass" id="lightboxNext" aria-label="Photographie suivante">→</button>
+  <figure class="lb-figure">
+    <img id="lightboxImg" src="" alt="">
+    <figcaption class="lb-caption glass" id="lightboxCap"></figcaption>
+  </figure>
+  <div class="meta-panel glass" id="metaPanel"></div>
+</div>
+
+<script src="assets/vendor/d3-array.min.js"></script>
+<script src="assets/vendor/d3-geo.min.js"></script>
+<script src="assets/vendor/topojson-client.min.js"></script>
 <script src="assets/js/data.js"></script>
+<script src="assets/js/globe.js"></script>
 <script src="assets/js/app.js"></script>
 </body>
 </html>

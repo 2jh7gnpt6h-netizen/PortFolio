@@ -197,7 +197,12 @@
       "year": "2025",
       "tags": [],
       "countryCode": "jp",
-      "trips": [],
+      "trips": [
+        {
+          "from": "2025-05-19",
+          "to": "2025-06-02"
+        }
+      ],
       "hero": "images/japon/dscf6432.jpg",
       "heroAlt": "",
       "thumb": "images/japon/dscf6432.jpg",

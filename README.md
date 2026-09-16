@@ -39,8 +39,13 @@ valide, et il se révoque à tout moment.
 
 - **Carnets** : titre, lieu, année, étiquettes, pays sur le globe, photo de
   couverture, notes intercalées.
+- **Périodes du voyage** : une ou plusieurs par pays, au jour près. Un pays
+  visité deux fois apparaît deux fois dans la chronologie, à sa place. Un
+  carnet sans date n'y figure pas, et l'onglet disparaît tant qu'aucune date
+  n'est renseignée.
 - **Photographies** : dépose des fichiers, ils sont **redimensionnés à 2400 px
-  dans le navigateur** avant envoi. Réordonner, pivoter, légender, supprimer.
+  dans le navigateur** et compressées sous 620 Ko avant envoi (en WebP quand
+  le navigateur le gère). Réordonner, pivoter, légender, supprimer.
   La rotation réécrit le fichier : c'est ce qu'il faut pour les photos
   enregistrées en paysage sans métadonnée d'orientation.
 - **Ajouter un pays** : bouton « Ajouter », choisir le pays dans la liste. Le

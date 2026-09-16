@@ -181,3 +181,7 @@ input:focus, textarea:focus, select:focus{ outline:2px solid var(--accent); outl
 .toast.is-error{ background:var(--warn); }
 
 .progress{ font-size:13px; color:var(--muted); margin-top:10px; }
+
+.trip-item{ display:grid; grid-template-columns:1fr 1fr auto; gap:10px; align-items:end; margin-bottom:8px; }
+.trip-item .field{ margin-bottom:0; }
+@media (max-width:640px){ .trip-item{ grid-template-columns:1fr 1fr; } }

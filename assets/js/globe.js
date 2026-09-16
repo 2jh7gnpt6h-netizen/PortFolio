@@ -70,6 +70,7 @@
     var hoverPause = false;   // pause tant qu'un pays visité est survolé
     var resumeTimer = null;
     var hovered = null;
+    var activeCode = null;   // pays mis en avant par la chronologie
     var focusAnim = null;
     var lastTime = 0;
     var HALO = 1.18;          // rayon du halo, en multiples du rayon du globe
@@ -165,7 +166,7 @@
       // Pays visités
       highlights.forEach(function (h) {
         if (!h.feature) return;
-        var isHot = hovered && hovered.code === h.code;
+        var isHot = (hovered && hovered.code === h.code) || h.code === activeCode;
         ctx.save();
         ctx.shadowColor = palette.visitedGlow || "rgba(214,173,104,0.75)";
         ctx.shadowBlur = isHot ? 26 : 14;
@@ -442,6 +443,7 @@
       spinPaused = false;
       if (resumeTimer) { global.clearTimeout(resumeTimer); resumeTimer = null; }
       zoom = 1;
+      activeCode = null;
       projection.scale(baseRadius);
       canvas.style.cursor = "grab";
       if (opts.onHover) opts.onHover(null);
@@ -467,6 +469,7 @@
       draw: draw,
       setHighlights: setHighlights,
       focusCountry: focusCountry,
+      setActiveCountry: function (code) { activeCode = code || null; draw(); },
       reset: reset,
       // Suspend le rendu quand le globe n'est plus à l'écran (batterie).
       setActive: function (on) { visible = !!on && !document.hidden; lastTime = 0; },

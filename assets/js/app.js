@@ -194,6 +194,160 @@
       "</article>" + footerHTML();
   }
 
+  // ---------- Dates ----------
+  var MOIS = ["janvier", "février", "mars", "avril", "mai", "juin",
+              "juillet", "août", "septembre", "octobre", "novembre", "décembre"];
+
+  function parseDay(s) {
+    var m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(String(s || ""));
+    return m ? new Date(+m[1], +m[2] - 1, +m[3]) : null;
+  }
+
+  // « du 14 au 28 mars 2026 », « du 28 mars au 4 avril 2026 », « le 14 mars 2026 ».
+  // On n'écrit le mois et l'année qu'une fois quand ils ne changent pas.
+  function formatPeriod(from, to) {
+    var a = parseDay(from), b = parseDay(to);
+    if (!a) return "";
+    var day = function (d) { return d.getDate(); };
+    var full = function (d) { return d.getDate() + " " + MOIS[d.getMonth()] + " " + d.getFullYear(); };
+    if (!b || a.getTime() === b.getTime()) return "le " + full(a);
+    if (a.getFullYear() !== b.getFullYear()) return "du " + full(a) + " au " + full(b);
+    if (a.getMonth() !== b.getMonth()) {
+      return "du " + day(a) + " " + MOIS[a.getMonth()] + " au " + full(b);
+    }
+    return "du " + day(a) + " au " + full(b);
+  }
+
+  function durationDays(from, to) {
+    var a = parseDay(from), b = parseDay(to);
+    if (!a) return 0;
+    if (!b) return 1;
+    return Math.round((b - a) / 86400000) + 1;
+  }
+
+  // Un voyage = un carnet + une de ses périodes. Un pays visité deux fois
+  // apparaît donc deux fois dans la chronologie, à sa place.
+  function allTrips() {
+    var trips = [];
+    CARNETS.forEach(function (c) {
+      (c.trips || []).forEach(function (t) {
+        if (parseDay(t.from)) trips.push({ carnet: c, from: t.from, to: t.to });
+      });
+    });
+    return trips.sort(function (x, y) { return x.from < y.from ? 1 : x.from > y.from ? -1 : 0; });
+  }
+
+  var timelineGlobe = null;
+  var timelineObserver = null;
+
+  function destroyTimeline() {
+    if (timelineObserver) { timelineObserver.disconnect(); timelineObserver = null; }
+    if (timelineGlobe) { timelineGlobe.destroy(); timelineGlobe = null; }
+  }
+
+  function renderTimeline() {
+    gallery = [];
+    var trips = allTrips();
+    if (!trips.length) {
+      root.innerHTML =
+        '<div class="page-head"><h1 class="essay-title compact serif">Chronologie</h1>' +
+        '<div class="essay-sub"><span>Aucune date renseignée pour l\'instant</span></div></div>' +
+        footerHTML();
+      return;
+    }
+
+    var lastYear = null;
+    var entries = trips.map(function (t, i) {
+      var y = t.from.slice(0, 4);
+      var anchor = y !== lastYear ? '<div class="tl-year serif">' + esc(y) + "</div>" : "";
+      lastYear = y;
+      var days = durationDays(t.from, t.to);
+      return anchor +
+        '<article class="tl-entry reveal" data-code="' + esc(t.carnet.countryCode) + '" data-i="' + i + '">' +
+          '<div class="tl-dot" aria-hidden="true"></div>' +
+          '<a class="tl-card" href="#carnet/' + esc(t.carnet.slug) + '" data-nav="carnet/' + esc(t.carnet.slug) + '">' +
+            '<div class="tl-thumb"><img src="' + esc(t.carnet.thumb || t.carnet.hero) + '" alt="" loading="lazy" decoding="async"></div>' +
+            '<div class="tl-body">' +
+              '<h2 class="serif">' + esc(t.carnet.title) + "</h2>" +
+              '<p class="tl-dates">' + esc(formatPeriod(t.from, t.to)) + "</p>" +
+              '<p class="tl-meta">' + esc(t.carnet.place) + " · " + days + " jour" + (days > 1 ? "s" : "") +
+                " · " + (t.carnet.photos || []).length + " photographies</p>" +
+            "</div>" +
+            '<span class="tl-go" aria-hidden="true">↗</span>' +
+          "</a>" +
+        "</article>";
+    }).join("");
+
+    var pays = {};
+    trips.forEach(function (t) { pays[t.carnet.slug] = true; });
+    root.innerHTML =
+      '<div class="page-head">' +
+        '<h1 class="essay-title compact serif">Chronologie</h1>' +
+        '<div class="essay-sub"><span>' + trips.length + " voyage" + (trips.length > 1 ? "s" : "") + "</span>" +
+          "<span>" + Object.keys(pays).length + " pays</span></div>" +
+      "</div>" +
+      '<div class="tl-wrap">' +
+        '<div class="tl-globe"><div class="tl-globe-inner">' +
+          '<div class="globe-glass" aria-hidden="true"></div>' +
+          '<canvas id="tlGlobe" class="globe-canvas"></canvas>' +
+        "</div></div>" +
+        '<div class="tl-track">' + entries + "</div>" +
+      "</div>" + footerHTML();
+
+    var canvas = document.getElementById("tlGlobe");
+    timelineGlobe = Globe.create(canvas, {
+      highlights: CARNETS.map(function (c) { return { code: c.countryCode, title: c.title, slug: c.slug }; }),
+      fill: 0.84,
+      autoRotate: false,
+      palette: PALETTE_PAPIER,
+      onSelect: function (hit) { location.hash = "#carnet/" + hit.slug; }
+    });
+
+    // Le globe suit la lecture : l'entrée la plus proche du milieu de l'écran
+    // devient le pays visé.
+    var current = null;
+    var pick = function () {
+      var best = null, bestDist = Infinity;
+      root.querySelectorAll(".tl-entry").forEach(function (el) {
+        var r = el.getBoundingClientRect();
+        var d = Math.abs((r.top + r.height / 2) - window.innerHeight / 2);
+        if (d < bestDist) { bestDist = d; best = el; }
+      });
+      if (!best) return;
+      best.classList.add("is-current");
+      root.querySelectorAll(".tl-entry").forEach(function (el) {
+        if (el !== best) el.classList.remove("is-current");
+      });
+      var code = best.getAttribute("data-code");
+      if (code !== current) {
+        current = code;
+        if (timelineGlobe) {
+          timelineGlobe.setActiveCountry(code);
+          timelineGlobe.focusCountry(code, { duration: 0.9 });
+        }
+      }
+    };
+    timelineGlobe.ready.then(pick);
+    var ticking = false;
+    timelineObserver = { disconnect: function () { window.removeEventListener("scroll", onScroll); } };
+    var onScroll = function () {
+      if (ticking) return;
+      ticking = true;
+      window.requestAnimationFrame(function () { ticking = false; pick(); });
+    };
+    window.addEventListener("scroll", onScroll, { passive: true });
+  }
+
+  var PALETTE_PAPIER = {
+    oceanTop: "rgba(58,92,101,0.92)",
+    oceanBottom: "rgba(20,42,50,0.96)",
+    land: "rgba(240,235,222,0.30)",
+    landStroke: "rgba(246,242,232,0.26)",
+    graticule: "rgba(236,230,216,0.12)",
+    limb: "rgba(8,16,20,0.42)",
+    rim: "rgba(255,252,246,0.30)"
+  };
+
   var carteGlobe = null;
 
   function destroyCarteGlobe() {
@@ -227,17 +381,7 @@
     var tip = document.getElementById("carteTip");
     carteGlobe = Globe.create(canvas, {
       highlights: CARNETS.map(function (c) { return { code: c.countryCode, title: c.title, slug: c.slug }; }),
-      // Ici le globe se détache sur du papier : rien à laisser voir au
-      // travers, donc une matière plus dense que sur l'intro.
-      palette: {
-        oceanTop: "rgba(58,92,101,0.92)",
-        oceanBottom: "rgba(20,42,50,0.96)",
-        land: "rgba(240,235,222,0.30)",
-        landStroke: "rgba(246,242,232,0.26)",
-        graticule: "rgba(236,230,216,0.12)",
-        limb: "rgba(8,16,20,0.42)",
-        rim: "rgba(255,252,246,0.30)"
-      },
+      palette: PALETTE_PAPIER,
       onHover: function (hit, x, y) { showTip(tip, canvas, hit, x, y); },
       onSelect: function (hit) { location.hash = "#carnet/" + hit.slug; }
     });
@@ -269,17 +413,19 @@
   }
 
   // ---------- Router ----------
-  var ROUTES = { home: renderHome, expositions: renderExpositions, carte: renderCarte };
+  var ROUTES = { home: renderHome, chronologie: renderTimeline, expositions: renderExpositions, carte: renderCarte };
 
   function navGroup(hash) {
     if (hash === "home" || hash.indexOf("carnet/") === 0) return "home";
     if (hash === "expositions" || hash.indexOf("expo/") === 0) return "expositions";
+    if (hash === "chronologie") return "chronologie";
     if (hash === "carte") return "carte";
     return "home";
   }
 
   function render() {
     destroyCarteGlobe();
+    destroyTimeline();
     var hash = (window.location.hash || "#home").replace("#", "");
     if (hash.indexOf("carnet/") === 0) {
       renderCarnet(hash.slice("carnet/".length));
@@ -299,6 +445,8 @@
       a.classList.toggle("is-active", a.getAttribute("data-view") === navGroup(hash));
     });
     document.body.classList.toggle("on-home", hash === "home");
+    var tlLink = nav.querySelector('[data-view="chronologie"]');
+    if (tlLink) tlLink.hidden = allTrips().length === 0;
     window.scrollTo(0, 0);
     attachFrameListeners();
     observeReveals();

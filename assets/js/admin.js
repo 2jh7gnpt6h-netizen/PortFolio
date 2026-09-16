@@ -368,6 +368,12 @@
         '<p class="progress" id="photoProgress" hidden></p>' +
       "</div>" +
 
+      '<div class="block"><div class="block-head"><h3>Périodes du voyage</h3>' +
+        '<button class="btn small" id="addTrip">Ajouter une période</button></div>' +
+        '<p class="muted small" style="margin-bottom:10px;">Un pays visité deux fois ' +
+        'apparaît deux fois dans la chronologie. Laisser vide pour ne pas l\'y faire figurer.</p>' +
+        '<div id="tripsList"></div></div>' +
+
       '<div class="block"><div class="block-head"><h3>Notes intercalées</h3>' +
         '<button class="btn small" id="addNote">Ajouter</button></div>' +
         '<div id="notesList"></div></div>' +
@@ -386,6 +392,11 @@
 
     $("addPhotosBtn").addEventListener("click", function () { $("addPhotos").click(); });
     $("addPhotos").addEventListener("change", function (e) { addPhotos(c, e.target.files); });
+    $("addTrip").addEventListener("click", function () {
+      c.trips = c.trips || [];
+      c.trips.push({ from: "", to: "" });
+      touch(); renderTrips(c);
+    });
     $("addNote").addEventListener("click", function () {
       c.notes = c.notes || [];
       c.notes.push({ afterGroup: 0, text: "", align: "left" });
@@ -400,7 +411,32 @@
     });
 
     renderPhotoGrid(c);
+    renderTrips(c);
     renderNotes(c);
+  }
+
+  function renderTrips(c) {
+    var box = $("tripsList");
+    if (!box) return;
+    var trips = c.trips || [];
+    if (!trips.length) { box.innerHTML = '<p class="empty">Aucune date renseignée.</p>'; return; }
+    box.innerHTML = trips.map(function (t, i) {
+      return '<div class="trip-item">' +
+        '<label class="field"><span>Départ</span><input type="date" data-t="from" data-i="' + i + '" value="' + esc(t.from || "") + '"></label>' +
+        '<label class="field"><span>Retour</span><input type="date" data-t="to" data-i="' + i + '" value="' + esc(t.to || "") + '"></label>' +
+        '<button class="btn icon danger" data-tripdel="' + i + '" title="Retirer">✕</button></div>';
+    }).join("");
+    box.querySelectorAll("[data-t]").forEach(function (el) {
+      el.addEventListener("input", function () {
+        trips[+el.dataset.i][el.dataset.t] = el.value;
+        touch();
+      });
+    });
+    box.querySelectorAll("[data-tripdel]").forEach(function (b) {
+      b.addEventListener("click", function () {
+        trips.splice(+b.dataset.tripdel, 1); touch(); renderTrips(c);
+      });
+    });
   }
 
   function field(key, label, value) {
@@ -563,7 +599,8 @@
         }
         carnets().push({
           slug: slug, title: title, place: title, year: $("newYear").value.trim(),
-          tags: [], countryCode: code, hero: "", heroAlt: "", thumb: "", photos: [], notes: []
+          tags: [], countryCode: code, hero: "", heroAlt: "", thumb: "",
+          trips: [{ from: "", to: "" }], photos: [], notes: []
         });
         state.selectedCarnet = carnets().length - 1;
         touch(); renderCarnetList(); renderCarnetEditor();

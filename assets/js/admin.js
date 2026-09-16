@@ -74,13 +74,39 @@
     }).then(function (r) {
       if (!r.ok) {
         return r.json().catch(function () { return {}; }).then(function (e) {
-          throw new Error((e && e.message ? e.message : r.statusText) + " (" + r.status + ")");
+          var err = new Error((e && e.message ? e.message : r.statusText) + " (" + r.status + ")");
+          err.status = r.status;
+          err.endpoint = (opts.method || "GET") + " " + path;
+          throw err;
         });
       }
       return r.status === 204 ? null : r.json();
     });
   }
   function repoPath(p) { return "/repos/" + repo.owner + "/" + repo.name + p; }
+
+  // Un 403 sur ce genre d'outil veut presque toujours dire la même chose.
+  function explain(err) {
+    if (err.status === 403) {
+      return "Le jeton n'a pas le droit d'écrire dans " + repo.owner + "/" + repo.name + ".\n" +
+        "Sur GitHub → Settings → Developer settings → jeton → Repository permissions, " +
+        "mets « Contents » sur « Read and write » (un jeton classique, lui, a besoin de la portée « repo »), " +
+        "puis reconnecte-toi avec le jeton mis à jour.\n" +
+        "Détail : " + err.endpoint + " → " + err.message;
+    }
+    if (err.status === 401) {
+      return "Jeton refusé (expiré ou révoqué). Il faut en créer un nouveau.";
+    }
+    if (err.status === 404) {
+      return "Dépôt introuvable pour ce jeton : vérifie qu'il donne accès à " +
+        repo.owner + "/" + repo.name + " (« Only select repositories »).";
+    }
+    if (err.status === 409 || err.status === 422) {
+      return "La branche a bougé entre-temps. Clique sur « Recharger », puis refais tes modifications.\n" +
+        "Détail : " + err.message;
+    }
+    return err.message;
+  }
 
   // ---------- Connexion ----------
   function loadToken() {
@@ -104,11 +130,16 @@
         state.user = user;
         return gh(repoPath(""));
       })
-      .then(function (r) {
-        if (!r.permissions || !r.permissions.push) {
-          throw new Error("Ce jeton n'a pas le droit d'écrire dans " + repo.owner + "/" + repo.name +
-                          ". Vérifie la permission « Contents : Read and write ».");
-        }
+      .then(function () {
+        // Vrai test d'écriture. `permissions.push` renvoyé par l'API décrit les
+        // droits du *compte* sur le dépôt, pas ceux du jeton : un jeton en
+        // lecture seule le franchissait, et l'échec n'arrivait qu'à la
+        // publication. On crée donc un blob vide, référencé par aucun arbre ni
+        // commit : invisible dans l'historique, ramassé par GitHub, et sans
+        // effet sur le site.
+        return gh(repoPath("/git/blobs"), { method: "POST", body: { content: "", encoding: "utf-8" } });
+      })
+      .then(function () {
         if (remember !== undefined) storeToken(token, remember);
         return loadEverything();
       });
@@ -736,7 +767,7 @@
       })["catch"](function (e) {
         btn.textContent = label;
         btn.disabled = false;
-        toast("Échec de la publication : " + e.message, true);
+        toast("Échec de la publication. " + explain(e), true);
       });
   }
 
@@ -747,7 +778,7 @@
     $("authError").hidden = true;
     $("loginBtn").disabled = true;
     connect(token, $("rememberToken").checked)["catch"](function (e) {
-      $("authError").textContent = e.message;
+      $("authError").textContent = explain(e);
       $("authError").hidden = false;
       $("loginBtn").disabled = false;
     });
@@ -782,7 +813,7 @@
   if (saved) {
     connect(saved)["catch"](function (e) {
       forgetToken();
-      $("authError").textContent = "Jeton expiré ou révoqué : " + e.message;
+      $("authError").textContent = explain(e);
       $("authError").hidden = false;
     });
   }

@@ -28,7 +28,7 @@ a{ color:var(--accent); }
 h1,h2,h3{ font-weight:500; }
 .muted{ color:var(--muted); }
 .small{ font-size:12.5px; }
-.error{ color:var(--warn); }
+.error{ color:var(--warn); white-space:pre-line; line-height:1.6; }
 
 /* ---------- Barre ---------- */
 .bar{
@@ -175,7 +175,8 @@ input:focus, textarea:focus, select:focus{ outline:2px solid var(--accent); outl
   position:fixed; left:50%; bottom:22px; transform:translateX(-50%); z-index:60;
   padding:11px 18px; border-radius:100px; font-size:13px;
   background:var(--ink); color:#f4f1ea; box-shadow:0 12px 32px -12px rgba(0,0,0,.5);
-  max-width:calc(100% - 32px);
+  max-width:min(560px, calc(100% - 32px));
+  white-space:pre-line; line-height:1.5; text-align:left;
 }
 .toast.is-error{ background:var(--warn); }
 

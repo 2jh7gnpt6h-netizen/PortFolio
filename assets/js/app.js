@@ -114,13 +114,18 @@
     var heroAlt = featured ? featured.heroAlt : "";
     var rows = CARNETS.map(function (c) { return carnetRowHTML(c, "carnet/" + c.slug); }).join("");
 
+    // Avec l'intro, le héros est « collant » : il reste en place derrière le
+    // globe pendant toute la transition, puis défile normalement. Sans lui,
+    // on verrait une bande vide passer sous le voile.
     root.innerHTML =
+      (introEnabled ? '<div class="hero-stage">' : "") +
       '<div class="hero"><img src="' + heroImg + '" alt="' + esc(heroAlt) + '" fetchpriority="high" decoding="async">' +
         '<div class="hero-caption">' +
           '<span class="loc glass">' + esc(featured ? featured.title + " · " + featured.place : "") + "</span>" +
           '<span class="scroll-cue" aria-hidden="true">défiler</span>' +
         "</div>" +
       "</div>" +
+      (introEnabled ? "</div>" : "") +
       '<div class="intro-block"><div class="intro-grid">' +
         '<h2 class="serif reveal">Des lieux traversés, gardés en images.</h2>' +
         '<p class="lede reveal">Consultant dans la vie active, photographe le reste du temps. Ce site rassemble mes carnets de voyage — un lieu, une lumière, quelques images qui restent une fois le sac reposé.</p>' +
@@ -281,6 +286,7 @@
     attachFrameListeners();
     observeReveals();
     updateChrome();
+    showIntro(hash === "home");
   }
 
   document.addEventListener("click", function (e) {
@@ -412,76 +418,98 @@
     else if (e.key === "ArrowLeft") showAt(lbIndex - 1);
   });
 
-  // ---------- Intro : globe puis entrée dans le site ----------
+  // ---------- Intro : le globe est le haut de la page d'accueil ----------
+  // La transition n'est pas un rideau qu'on chasse, c'est une fonction du
+  // défilement : on remonte en haut, le globe revient. Le repère est la
+  // hauteur du « spacer » posé en tête de la page d'accueil.
   var intro = document.getElementById("intro");
   var introGlobe = null;
+  var introEnabled = !!window.Globe;
+  var diving = false;
 
-  function introAlreadySeen() {
-    try { return sessionStorage.getItem("introSeen") === "1"; } catch (e) { return false; }
-  }
-  function markIntroSeen() {
-    try { sessionStorage.setItem("introSeen", "1"); } catch (e) {}
-  }
-
-  function dismissIntro(then) {
-    if (!intro || intro.hidden || intro.classList.contains("is-leaving")) return;
-    markIntroSeen();
-    intro.classList.add("is-leaving");
-    document.body.classList.remove("intro-open");
-    var wait = reducedMotion() ? 0 : 900;
-    window.setTimeout(function () {
-      intro.hidden = true;
-      intro.classList.remove("is-leaving", "is-on");
-      if (introGlobe) { introGlobe.destroy(); introGlobe = null; }
-      if (then) then();
-    }, wait);
+  function introSpan() {
+    return Math.max(1, window.innerHeight * 0.85);
   }
 
-  function startIntro() {
-    var hash = (window.location.hash || "#home").replace("#", "");
-    if (hash !== "home" || introAlreadySeen() || !window.Globe) return;
+  function updateIntro() {
+    if (!introEnabled || intro.hidden || diving) return;
+    var p = Math.min(1, Math.max(0, window.scrollY / introSpan()));
+    intro.style.setProperty("--p", p.toFixed(4));
+    intro.classList.toggle("is-past", p > 0.995);   // sorti de l'écran
+    intro.classList.toggle("is-back", p > 0.45);    // laisse passer les clics
+    document.body.classList.toggle("globe-front", p < 0.5);
+    if (introGlobe) introGlobe.setActive(p < 0.995);
+  }
 
-    intro.hidden = false;
-    document.body.classList.add("intro-open");
-    var canvas = document.getElementById("introGlobe");
-    var tip = document.getElementById("introTip");
-
-    introGlobe = Globe.create(canvas, {
-      highlights: CARNETS.map(function (c) { return { code: c.countryCode, title: c.title, slug: c.slug }; }),
-      fill: 0.86,
-      onHover: function (hit, x, y) { showTip(tip, canvas, hit, x, y); },
-      onSelect: function (hit) {
-        introGlobe.focusCountry(hit.code, function () {
-          dismissIntro(function () { location.hash = "#carnet/" + hit.slug; });
-        });
-      },
-      onError: function () { dismissIntro(); }
-    });
-
-    window.requestAnimationFrame(function () { intro.classList.add("is-on"); });
-
-    var leave = function () { dismissIntro(); };
-    document.getElementById("introEnter").addEventListener("click", leave);
-    intro.addEventListener("wheel", function (e) {
-      if (e.deltaY > 0) leave();
-    }, { passive: true });
-    var touchStart = null;
-    intro.addEventListener("touchstart", function (e) {
-      touchStart = e.touches[0] ? e.touches[0].clientY : null;
-    }, { passive: true });
-    intro.addEventListener("touchmove", function (e) {
-      if (touchStart == null || !e.touches[0]) return;
-      if (touchStart - e.touches[0].clientY > 60) leave();
-    }, { passive: true });
-    document.addEventListener("keydown", function (e) {
-      if (intro.hidden) return;
-      if (e.key === "Escape" || e.key === "Enter" || e.key === " " || e.key === "ArrowDown" || e.key === "PageDown") {
-        e.preventDefault();
-        leave();
-      }
+  var introTicking = false;
+  function onIntroScroll() {
+    if (introTicking) return;
+    introTicking = true;
+    window.requestAnimationFrame(function () {
+      introTicking = false;
+      updateIntro();
     });
   }
+
+  function enterSite() {
+    window.scrollTo({ top: Math.ceil(introSpan()) + 2, behavior: reducedMotion() ? "auto" : "smooth" });
+  }
+
+  // Plongée vers le pays choisi, puis ouverture du carnet.
+  function diveTo(hit) {
+    if (diving) return;
+    diving = true;
+    intro.classList.add("is-diving");
+    document.body.classList.remove("globe-front");
+    var dur = reducedMotion() ? 0 : 1100;
+    introGlobe.focusCountry(hit.code, { zoom: 2.6, duration: dur / 1000 }, function () {
+      location.hash = "#carnet/" + hit.slug;
+      window.setTimeout(function () {
+        intro.classList.remove("is-diving");
+        diving = false;
+        showIntro(false);
+      }, 60);
+    });
+  }
+
+  function showIntro(on) {
+    if (!introEnabled) return;
+    intro.hidden = !on;
+    document.body.classList.toggle("has-intro", on);
+    if (!on) {
+      document.body.classList.remove("globe-front");
+      if (introGlobe) introGlobe.setActive(false);
+      return;
+    }
+    if (!introGlobe) {
+      var canvas = document.getElementById("introGlobe");
+      var tip = document.getElementById("introTip");
+      introGlobe = Globe.create(canvas, {
+        highlights: CARNETS.map(function (c) { return { code: c.countryCode, title: c.title, slug: c.slug }; }),
+        fill: 0.84,
+        onHover: function (hit, x, y) { showTip(tip, canvas, hit, x, y); },
+        onSelect: diveTo,
+        onError: function () { introEnabled = false; showIntro(false); }
+      });
+    } else {
+      introGlobe.setActive(true);
+      introGlobe.resize();
+    }
+    intro.classList.add("is-on");
+    updateIntro();
+  }
+
+  document.getElementById("introEnter").addEventListener("click", enterSite);
+  window.addEventListener("scroll", onIntroScroll, { passive: true });
+  window.addEventListener("resize", onIntroScroll);
+  document.addEventListener("keydown", function (e) {
+    if (intro.hidden || diving || window.scrollY > 4) return;
+    if (e.key === "Enter" || e.key === " " || e.key === "ArrowDown" || e.key === "PageDown") {
+      if (document.activeElement && document.activeElement.closest(".intro-ui")) return;
+      e.preventDefault();
+      enterSite();
+    }
+  });
 
   render();
-  startIntro();
 })();

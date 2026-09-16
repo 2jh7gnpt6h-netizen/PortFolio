@@ -72,6 +72,9 @@
     var hovered = null;
     var focusAnim = null;
     var lastTime = 0;
+    var HALO = 1.18;          // rayon du halo, en multiples du rayon du globe
+    var baseRadius = 1;
+    var zoom = 1;
 
     var projection = d3.geoOrthographic().precision(0.4);
     var path = d3.geoPath(projection, ctx);
@@ -94,8 +97,10 @@
       canvas.width = Math.round(s.w * dpr);
       canvas.height = Math.round(s.h * dpr);
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-      var radius = (Math.min(s.w, s.h) / 2) * (opts.fill || 0.92);
-      projection.translate([s.w / 2, s.h / 2]).scale(radius);
+      // Le halo déborde jusqu'à 1.18 rayon : on garde cette marge dans le
+      // canvas, sinon il est tranché en haut et en bas.
+      baseRadius = (Math.min(s.w, s.h) / 2) * (opts.fill || 0.84) / HALO;
+      projection.translate([s.w / 2, s.h / 2]).scale(baseRadius * zoom);
       draw();
     }
 
@@ -121,14 +126,17 @@
       projection.rotate(rotation);
       ctx.clearRect(0, 0, s.w, s.h);
 
-      // Halo extérieur
-      var halo = ctx.createRadialGradient(cx, cy, r * 0.96, cx, cy, r * 1.18);
-      halo.addColorStop(0, palette.halo || "rgba(182,147,90,0.28)");
-      halo.addColorStop(1, "rgba(182,147,90,0)");
-      ctx.beginPath();
-      ctx.arc(cx, cy, r * 1.18, 0, Math.PI * 2);
-      ctx.fillStyle = halo;
-      ctx.fill();
+      // Halo extérieur (borné au canvas pour ne jamais être tranché)
+      var haloR = Math.min(r * HALO, Math.min(s.w, s.h) / 2);
+      if (haloR > r) {
+        var halo = ctx.createRadialGradient(cx, cy, r * 0.96, cx, cy, haloR);
+        halo.addColorStop(0, palette.halo || "rgba(182,147,90,0.28)");
+        halo.addColorStop(1, "rgba(182,147,90,0)");
+        ctx.beginPath();
+        ctx.arc(cx, cy, haloR, 0, Math.PI * 2);
+        ctx.fillStyle = halo;
+        ctx.fill();
+      }
 
       // Océan
       var ocean = ctx.createRadialGradient(cx - r * 0.35, cy - r * 0.4, r * 0.1, cx, cy, r);
@@ -190,9 +198,15 @@
       var moved = false;
       if (focusAnim) {
         focusAnim.t = Math.min(1, focusAnim.t + dt / focusAnim.dur);
-        var e = 1 - Math.pow(1 - focusAnim.t, 3); // easeOutCubic
+        // easeInOutCubic : départ doux, arrivée douce — la plongée ne « claque » pas
+        var t = focusAnim.t;
+        var e = t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
         rotation[0] = focusAnim.from[0] + focusAnim.d0 * e;
         rotation[1] = focusAnim.from[1] + focusAnim.d1 * e;
+        if (focusAnim.dz) {
+          zoom = focusAnim.z0 + focusAnim.dz * e;
+          projection.scale(baseRadius * zoom);
+        }
         if (focusAnim.t >= 1) { focusAnim = null; }
         moved = true;
       } else if (spin && !spinPaused && !hoverPause) {
@@ -341,13 +355,24 @@
       draw();
     }
 
-    function focusCountry(code, done) {
+    // focusCountry(code[, config], done)
+    //   config.zoom     : facteur d'agrandissement final (1 = pas de zoom)
+    //   config.duration : durée en secondes
+    function focusCountry(code, config, done) {
+      if (typeof config === "function") { done = config; config = null; }
+      config = config || {};
       var h = highlights.filter(function (x) { return x.code === code; })[0];
       if (!h || !h.feature) { if (done) done(); return; }
       var c = d3.geoCentroid(h.feature);
       var target = [-c[0], -c[1]];
+      var targetZoom = config.zoom || 1;
+      var dur = config.duration || 0.85;
+
+      spinPaused = true;
       if (reducedMotion()) {
         rotation[0] = target[0]; rotation[1] = target[1];
+        zoom = targetZoom;
+        projection.scale(baseRadius * zoom);
         draw();
         if (done) done();
         return;
@@ -356,11 +381,12 @@
         from: [rotation[0], rotation[1]],
         d0: shortestDelta(rotation[0], target[0]),
         d1: target[1] - rotation[1],
+        z0: zoom,
+        dz: targetZoom - zoom,
         t: 0,
-        dur: 0.85
+        dur: dur
       };
-      spinPaused = true;
-      if (done) global.setTimeout(done, 880);
+      if (done) global.setTimeout(done, dur * 1000);
     }
 
     function destroy() {
@@ -382,6 +408,8 @@
       draw: draw,
       setHighlights: setHighlights,
       focusCountry: focusCountry,
+      // Suspend le rendu quand le globe n'est plus à l'écran (batterie).
+      setActive: function (on) { visible = !!on && !document.hidden; lastTime = 0; },
       destroy: destroy,
       ready: loadWorld().then(function (w) {
         if (destroyed) return api;

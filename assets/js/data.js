@@ -51,6 +51,54 @@ const CARNETS = [
       { afterGroup: 0, text: "On arrive par la chaleur et le silence. La pierre claire renvoie la lumière avant même d'entrer." },
       { afterGroup: 1, text: "Chaque minaret raconte une échelle différente selon l'angle d'où on le regarde.", align: "right" }
     ]
+  },
+  {
+    slug: "indonesie",
+    title: "Indonésie",
+    place: "Indonésie",
+    year: 2026,
+    tags: ["Nature", "Volcans", "Temples"],
+    countryCode: "id", // code ISO utilisé par la carte (assets/img/world-map.svg)
+    hero: "images/indonesie/DSCF4781.jpg",
+    heroAlt: "",
+    thumb: "images/indonesie/DSCF4020.jpg",
+    photos: [
+      { file: "images/indonesie/DSCF3019.jpg", alt: "", cap: "", meta: {} },
+      { file: "images/indonesie/DSCF3072.jpeg", alt: "", cap: "", meta: {} },
+      { file: "images/indonesie/DSCF4138.jpg", alt: "", cap: "", meta: {} },
+      { file: "images/indonesie/DSCF4289.jpg", alt: "", cap: "", meta: {} },
+      { file: "images/indonesie/DSCF4395.jpg", alt: "", cap: "", meta: {} },
+      { file: "images/indonesie/DSCF5241.jpg", alt: "", cap: "", meta: {} },
+      { file: "images/indonesie/DSCF5357.jpg", alt: "", cap: "", meta: {} },
+      { file: "images/indonesie/DSCF5389.jpg", alt: "", cap: "", meta: {} },
+      { file: "images/indonesie/DSCF5554.jpg", alt: "", cap: "", meta: {} },
+      { file: "images/indonesie/IMG_6426.jpeg", alt: "", cap: "", meta: {} },
+      { file: "images/indonesie/IMG_6428.jpeg", alt: "", cap: "", meta: {} },
+      { file: "images/indonesie/IMG_6429.jpeg", alt: "", cap: "", meta: {} },
+      { file: "images/indonesie/IMG_6446.jpeg", alt: "", cap: "", meta: {} },
+      { file: "images/indonesie/DSCF0415.jpeg", alt: "", cap: "", meta: {} },
+      { file: "images/indonesie/DSCF3881.jpeg", alt: "", cap: "", meta: {} },
+      { file: "images/indonesie/DSCF3913.jpg", alt: "", cap: "", meta: {} },
+      { file: "images/indonesie/DSCF4020.jpg", alt: "", cap: "", meta: {} },
+      { file: "images/indonesie/DSCF4569.jpg", alt: "", cap: "", meta: {} },
+      { file: "images/indonesie/DSCF4585.jpg", alt: "", cap: "", meta: {} },
+      { file: "images/indonesie/DSCF4698.jpg", alt: "", cap: "", meta: {} },
+      { file: "images/indonesie/DSCF4765.jpg", alt: "", cap: "", meta: {} },
+      { file: "images/indonesie/DSCF4781.jpg", alt: "", cap: "", meta: {} },
+      { file: "images/indonesie/DSCF4900.jpg", alt: "", cap: "", meta: {} },
+      { file: "images/indonesie/DSCF5007.jpg", alt: "", cap: "", meta: {} },
+      { file: "images/indonesie/DSCF5039.jpg", alt: "", cap: "", meta: {} },
+      { file: "images/indonesie/DSCF5449.jpeg", alt: "", cap: "", meta: {} },
+      { file: "images/indonesie/DSCF5486.jpg", alt: "", cap: "", meta: {} },
+      { file: "images/indonesie/DSCF5501.jpg", alt: "", cap: "", meta: {} },
+      { file: "images/indonesie/DSCF5668.jpg", alt: "", cap: "", meta: {} },
+      { file: "images/indonesie/IMG_5505.jpeg", alt: "", cap: "", meta: {} },
+      { file: "images/indonesie/DSCF3270.jpg", alt: "", cap: "", meta: {} },
+      { file: "images/indonesie/DSCF3453.jpg", alt: "", cap: "", meta: {} },
+      { file: "images/indonesie/DSCF3539.jpg", alt: "", cap: "", meta: {} },
+      { file: "images/indonesie/DSCF3705.jpeg", alt: "", cap: "", meta: {} }
+    ],
+    notes: []
   }
 ];
 

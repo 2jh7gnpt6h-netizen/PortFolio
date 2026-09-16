@@ -281,17 +281,18 @@
 
     var pays = {};
     trips.forEach(function (t) { pays[t.carnet.slug] = true; });
+    // Pas de titre de page ici : l'onglet le dit déjà, et il se faisait
+    // tronquer en passant derrière le globe. Le décompte descend sous la
+    // sphère, où il reste lisible en permanence.
     root.innerHTML =
-      '<div class="page-head">' +
-        '<h1 class="essay-title compact serif">Chronologie</h1>' +
-        '<div class="essay-sub"><span>' + trips.length + " voyage" + (trips.length > 1 ? "s" : "") + "</span>" +
-          "<span>" + Object.keys(pays).length + " pays</span></div>" +
-      "</div>" +
       '<div class="tl-wrap">' +
         '<div class="tl-globe"><div class="tl-globe-inner">' +
           '<div class="globe-glass" aria-hidden="true"></div>' +
           '<canvas id="tlGlobe" class="globe-canvas"></canvas>' +
-        "</div></div>" +
+        "</div>" +
+        '<p class="tl-count">' + trips.length + " voyage" + (trips.length > 1 ? "s" : "") +
+          " · " + Object.keys(pays).length + " pays</p>" +
+        "</div>" +
         '<div class="tl-track">' + entries + "</div>" +
       "</div>" + footerHTML();
 

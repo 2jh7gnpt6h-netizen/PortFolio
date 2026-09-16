@@ -520,7 +520,8 @@ html.snap .tl-entry{ scroll-snap-align:center; }
    côté et pivote vers le pays de l'entrée en cours de lecture. */
 .tl-wrap{
   max-width:var(--wrap); margin:0 auto;
-  padding:0 var(--gutter) clamp(60px,9vw,120px);
+  /* Le titre de page a disparu : c'est cette marge qui dégage la barre fixe. */
+  padding:clamp(96px,13vw,132px) var(--gutter) clamp(60px,9vw,120px);
   display:grid; grid-template-columns:minmax(0,1fr) 418px;
   gap:clamp(24px,4vw,56px); align-items:start;
 }
@@ -538,7 +539,11 @@ html.snap .tl-entry{ scroll-snap-align:center; }
   margin:clamp(26px,4vw,46px) 0 12px -30px; padding-left:30px;
   letter-spacing:-.01em;
 }
-.tl-year:first-child{ margin-top:6px; }
+.tl-year:first-child{ margin-top:0; }
+.tl-count{
+  margin-top:12px; text-align:center;
+  font-size:12px; letter-spacing:.14em; text-transform:uppercase; color:var(--muted);
+}
 
 .tl-entry{ position:relative; margin-bottom:12px; }
 .tl-dot{
@@ -575,8 +580,9 @@ html.snap .tl-entry{ scroll-snap-align:center; }
   .tl-wrap{ grid-template-columns:1fr; gap:0; }
   .tl-globe{
     position:sticky; top:52px; z-index:5; order:1;
-    margin:0 calc(var(--gutter) * -1) 4px; padding:8px 0 22px;
+    margin:0 calc(var(--gutter) * -1) 4px; padding:8px 0 16px;
   }
+  .tl-count{ margin-top:8px; }
   .tl-globe::before{
     content:""; position:absolute; inset:-70px 0 -26px; z-index:-1;
     background:linear-gradient(180deg,

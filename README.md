@@ -59,6 +59,17 @@ republie le site en une à deux minutes.
 Note : `admin.html` est accessible à tous, mais sans jeton valide elle ne
 permet rien — ni de lire quoi que ce soit de privé, ni d'écrire.
 
+## Après avoir modifié un CSS ou un JS
+
+Les navigateurs gardent ces fichiers en mémoire : sans précaution, une
+modification peut rester invisible pendant des heures. Les pages les
+appellent donc avec un numéro de version (`style.css?v=3`). **Incrémenter ce
+numéro dans `index.html` et `admin.html`** à chaque modification d'un fichier
+`.css` ou `.js` — c'est ce qui force les navigateurs à recharger.
+
+Le contenu (`content.json`) n'est pas concerné : il est demandé en
+`no-cache`, donc toujours à jour.
+
 ## Ajouter un pays à la main (sans l'administration)
 
 1. Créer `images/japon/` et y déposer les photos, idéalement redimensionnées

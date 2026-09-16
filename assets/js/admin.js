@@ -15,8 +15,21 @@
   var CONTENT_PATH = "assets/data/content.json";
   var COUNTRIES_PATH = "assets/data/countries.json";
   var BRANCH = "main";
-  var MAX_SIDE = 2400;      // conforme à ce que préconise le README
-  var JPEG_QUALITY = 0.88;
+  // On vise un poids de fichier plutôt qu'une qualité fixe : à qualité
+  // constante une photo détaillée pèse deux fois plus qu'une photo douce, et
+  // c'est le poids qui ralentit le site et fait échouer les gros envois.
+  var TARGET_BYTES = 620 * 1024;
+  var LADDER = [                    // essayés dans l'ordre jusqu'à tenir le budget
+    { side: 2400, q: 0.86 }, { side: 2400, q: 0.78 }, { side: 2400, q: 0.70 },
+    { side: 2000, q: 0.74 }, { side: 2000, q: 0.66 }, { side: 1700, q: 0.68 }
+  ];
+
+  // Le WebP pèse 25 à 35 % de moins que le JPEG à qualité perçue égale.
+  var WEBP = (function () {
+    var c = document.createElement("canvas");
+    c.width = c.height = 1;
+    return c.toDataURL("image/webp").indexOf("data:image/webp") === 0;
+  })();
 
   // Dépôt déduit de l'URL quand le site tourne sur github.io.
   var repo = (function () {
@@ -214,27 +227,53 @@
     });
   }
 
-  // Redimensionne (et pivote éventuellement) vers un JPEG prêt à publier.
-  function processImage(source, quarterTurns) {
+  function drawTo(bmp, side, quarterTurns) {
+    var w = bmp.width, h = bmp.height;
+    var scale = Math.min(1, side / Math.max(w, h));
+    w = Math.round(w * scale); h = Math.round(h * scale);
+    var turned = (quarterTurns || 0) % 4;
+    var canvas = document.createElement("canvas");
+    canvas.width = turned % 2 ? h : w;
+    canvas.height = turned % 2 ? w : h;
+    var ctx = canvas.getContext("2d");
+    ctx.imageSmoothingQuality = "high";
+    ctx.translate(canvas.width / 2, canvas.height / 2);
+    ctx.rotate(turned * Math.PI / 2);
+    ctx.drawImage(bmp, -w / 2, -h / 2, w, h);
+    return canvas;
+  }
+
+  function toBlob(canvas, type, q) {
+    return new Promise(function (resolve) { canvas.toBlob(resolve, type, q); });
+  }
+
+  // Redimensionne, pivote éventuellement, puis descend l'échelle des réglages
+  // jusqu'à passer sous le budget. On garde le meilleur essai si rien n'y tient.
+  function processImage(source, quarterTurns, forceType) {
+    var type = forceType || (WEBP ? "image/webp" : "image/jpeg");
     return decode(source).then(function (bmp) {
-      var w = bmp.width, h = bmp.height;
-      var scale = Math.min(1, MAX_SIDE / Math.max(w, h));
-      w = Math.round(w * scale); h = Math.round(h * scale);
-      var turned = (quarterTurns || 0) % 4;
-      var canvas = document.createElement("canvas");
-      canvas.width = turned % 2 ? h : w;
-      canvas.height = turned % 2 ? w : h;
-      var ctx = canvas.getContext("2d");
-      ctx.translate(canvas.width / 2, canvas.height / 2);
-      ctx.rotate(turned * Math.PI / 2);
-      ctx.drawImage(bmp, -w / 2, -h / 2, w, h);
-      if (bmp.close) bmp.close();
-      return new Promise(function (resolve) {
-        canvas.toBlob(function (blob) {
-          resolve({ blob: blob, w: canvas.width, h: canvas.height });
-        }, "image/jpeg", JPEG_QUALITY);
+      var i = 0, best = null;
+      var attempt = function () {
+        if (i >= LADDER.length) return Promise.resolve(best);
+        var step = LADDER[i++];
+        var canvas = drawTo(bmp, step.side, quarterTurns);
+        return toBlob(canvas, type, step.q).then(function (blob) {
+          if (!best || blob.size < best.blob.size) {
+            best = { blob: blob, w: canvas.width, h: canvas.height, type: type };
+          }
+          return blob.size <= TARGET_BYTES ? best : attempt();
+        });
+      };
+      return attempt().then(function (out) {
+        if (bmp.close) bmp.close();
+        return out;
       });
     });
+  }
+
+  function extFor(type) { return type === "image/webp" ? ".webp" : ".jpg"; }
+  function typeForPath(path) {
+    return /\.webp$/i.test(path) ? "image/webp" : "image/jpeg";
   }
 
   function registerFile(path, result) {
@@ -242,7 +281,8 @@
       var prev = state.pendingFiles.get(path);
       if (prev && prev.url) URL.revokeObjectURL(prev.url);
       state.pendingFiles.set(path, {
-        base64: b64, url: URL.createObjectURL(result.blob), w: result.w, h: result.h
+        base64: b64, url: URL.createObjectURL(result.blob),
+        w: result.w, h: result.h, size: result.blob.size
       });
       state.doomedFiles["delete"](path);
       touch();
@@ -255,15 +295,15 @@
     return pending ? pending.url : file + "?v=" + encodeURIComponent(file);
   }
 
-  function uniquePath(slug, name) {
+  function uniquePath(slug, name, ext) {
     var base = slugify(name.replace(/\.[^.]+$/, "")) || "photo";
     var used = {};
     (state.content.carnets || []).forEach(function (c) {
       (c.photos || []).forEach(function (p) { used[p.file] = true; });
     });
     state.pendingFiles.forEach(function (_, k) { used[k] = true; });
-    var path = "images/" + slug + "/" + base + ".jpg", i = 2;
-    while (used[path]) { path = "images/" + slug + "/" + base + "-" + (i++) + ".jpg"; }
+    var path = "images/" + slug + "/" + base + ext, i = 2;
+    while (used[path]) { path = "images/" + slug + "/" + base + "-" + (i++) + ext; }
     return path;
   }
 
@@ -378,7 +418,8 @@
       return '<div class="photo' + (doomed ? " is-doomed" : "") + '">' +
         '<div class="photo-img"><img src="' + esc(photoSrc(p.file)) + '" alt="" loading="lazy">' +
           '<div class="photo-badge">' +
-            (isNew ? '<span class="tagpill new">nouveau</span>' : "") +
+            (isNew ? '<span class="tagpill new">' +
+              Math.round(state.pendingFiles.get(p.file).size / 1024) + " Ko</span>" : "") +
             '<span class="tagpill">' + (p.w > p.h ? "paysage" : "portrait") + "</span>" +
           "</div></div>" +
         '<div class="photo-tools">' +
@@ -436,7 +477,7 @@
         });
     toast("Rotation…");
     source
-      .then(function (blob) { return processImage(blob, quarterTurns); })
+      .then(function (blob) { return processImage(blob, quarterTurns, typeForPath(p.file)); })
       .then(function (out) { return registerFile(p.file, out); })
       .then(function (dim) {
         p.w = dim.w; p.h = dim.h;
@@ -450,16 +491,20 @@
     if (!files.length) return;
     var prog = $("photoProgress");
     prog.hidden = false;
-    var done = 0;
+    var done = 0, saved = 0;
     var step = function (file) {
       return processImage(file, 0).then(function (out) {
-        var path = uniquePath(c.slug, file.name);
+        var path = uniquePath(c.slug, file.name, extFor(out.type));
         return registerFile(path, out).then(function (dim) {
           c.photos = c.photos || [];
           c.photos.push({ file: path, alt: "", cap: "", w: dim.w, h: dim.h, meta: {} });
           if (!c.hero) c.hero = path;
           if (!c.thumb) c.thumb = path;
-          prog.textContent = "Préparation " + (++done) + " / " + files.length;
+          done++;
+          saved += file.size - out.blob.size;
+          prog.textContent = "Préparation " + done + " / " + files.length +
+            " — " + Math.round(out.blob.size / 1024) + " Ko" +
+            " (au lieu de " + Math.round(file.size / 1024) + " Ko)";
         });
       });
     };
@@ -467,7 +512,8 @@
       .then(function () {
         prog.hidden = true;
         renderCarnetEditor();
-        toast(files.length + " photo" + (files.length > 1 ? "s" : "") + " prête" + (files.length > 1 ? "s" : "") + " à publier");
+        toast(files.length + " photo" + (files.length > 1 ? "s" : "") + " prête" +
+          (files.length > 1 ? "s" : "") + " — " + Math.round(saved / 1024 / 1024 * 10) / 10 + " Mo économisés");
       })["catch"](function (e) { prog.hidden = true; toast(e.message, true); });
   }
 

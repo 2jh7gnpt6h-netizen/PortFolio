@@ -226,6 +226,29 @@
     return Math.round((b - a) / 86400000) + 1;
   }
 
+  // 193 États membres de l'ONU : la référence courante pour « combien de
+  // pays compte le monde ».
+  var PAYS_ONU = 193;
+
+  // Un pays visité deux fois ne compte qu'une fois. On déduplique sur le code
+  // pays et non sur le carnet : « Oman I » et « Oman II » sont deux carnets,
+  // un seul pays.
+  function paysVisites() {
+    var vus = {};
+    CARNETS.forEach(function (c) {
+      if (c.countryCode) vus[String(c.countryCode).toLowerCase()] = true;
+    });
+    return Object.keys(vus).length;
+  }
+
+  // Sous 10 %, une décimale dit quelque chose ; au-delà, l'entier suffit.
+  // Virgule décimale, on écrit en français.
+  function partDuMonde(n) {
+    var pct = (n / PAYS_ONU) * 100;
+    var arrondi = pct >= 10 ? Math.round(pct) : Math.round(pct * 10) / 10;
+    return String(arrondi).replace(".", ",");
+  }
+
   // Un voyage = un carnet + une de ses périodes. Un pays visité deux fois
   // apparaît donc deux fois dans la chronologie, à sa place.
   function allTrips() {
@@ -279,19 +302,29 @@
         "</article>";
     }).join("");
 
-    var pays = {};
-    trips.forEach(function (t) { pays[t.carnet.slug] = true; });
     // Pas de titre de page ici : l'onglet le dit déjà, et il se faisait
-    // tronquer en passant derrière le globe. Le décompte descend sous la
-    // sphère, où il reste lisible en permanence.
+    // tronquer en passant derrière le globe. Le compte coiffe la sphère,
+    // où il reste lisible à toutes les positions de lecture.
+    var nbPays = paysVisites();
+    var part = (nbPays / PAYS_ONU) * 100;
+    var stats =
+      '<div class="tl-stats">' +
+        '<p class="tl-count">' + trips.length + " voyage" + (trips.length > 1 ? "s" : "") +
+          " · " + nbPays + " pays</p>" +
+        '<div class="tl-bar" role="img" aria-label="' +
+          nbPays + " pays sur les " + PAYS_ONU + " États membres de l'ONU\">" +
+          '<span style="width:' + part.toFixed(2) + '%"></span></div>' +
+        '<p class="tl-share" title="' + nbPays + " pays sur les " + PAYS_ONU +
+          " États membres de l'ONU\">" + partDuMonde(nbPays) + " % du monde</p>" +
+      "</div>";
+
     root.innerHTML =
       '<div class="tl-wrap">' +
-        '<div class="tl-globe"><div class="tl-globe-inner">' +
-          '<div class="globe-glass" aria-hidden="true"></div>' +
-          '<canvas id="tlGlobe" class="globe-canvas"></canvas>' +
-        "</div>" +
-        '<p class="tl-count">' + trips.length + " voyage" + (trips.length > 1 ? "s" : "") +
-          " · " + Object.keys(pays).length + " pays</p>" +
+        '<div class="tl-globe">' + stats +
+          '<div class="tl-globe-inner">' +
+            '<div class="globe-glass" aria-hidden="true"></div>' +
+            '<canvas id="tlGlobe" class="globe-canvas"></canvas>' +
+          "</div>" +
         "</div>" +
         '<div class="tl-track">' + entries + "</div>" +
       "</div>" + footerHTML();
@@ -361,7 +394,7 @@
     root.innerHTML =
       '<div class="page-head">' +
         '<h1 class="essay-title compact serif">Carte</h1>' +
-        '<div class="essay-sub"><span>' + CARNETS.length + " pays visité" + (CARNETS.length > 1 ? "s" : "") +
+        '<div class="essay-sub"><span>' + paysVisites() + " pays visité" + (paysVisites() > 1 ? "s" : "") +
           "</span><span>Faites tourner le globe</span></div>" +
       "</div>" +
       '<div class="globe-panel">' +

@@ -540,9 +540,29 @@ html.snap .tl-entry{ scroll-snap-align:center; }
   letter-spacing:-.01em;
 }
 .tl-year:first-child{ margin-top:0; }
+/* Le bloc de comptes coiffe le globe : voyages et pays, puis la part du
+   monde parcourue. La jauge garde 3px de minimum, sans quoi un seul pays
+   sur 193 ne dessinerait rien du tout. */
+.tl-stats{ max-width:268px; margin:0 auto clamp(14px,2vw,20px); text-align:center; }
 .tl-count{
-  margin-top:12px; text-align:center;
+  margin:0;
   font-size:12px; letter-spacing:.14em; text-transform:uppercase; color:var(--muted);
+}
+.tl-bar{
+  height:3px; margin:10px auto 8px; border-radius:3px;
+  background:rgba(21,19,15,0.10); overflow:visible;
+}
+/* La halo compte autant que la barre : à 1,6 %, sans lui, la part parcourue
+   ferait quatre pixels que personne ne verrait. */
+.tl-bar span{
+  display:block; height:100%; min-width:4px; border-radius:3px;
+  background:linear-gradient(90deg, var(--stone), var(--stone-bright));
+  box-shadow:0 0 8px 1px rgba(214,173,104,.85);
+}
+.tl-share{
+  margin:0;
+  font-size:11px; letter-spacing:.16em; text-transform:uppercase;
+  color:rgba(51,47,39,0.48);
 }
 
 .tl-entry{ position:relative; margin-bottom:12px; }
@@ -582,7 +602,8 @@ html.snap .tl-entry{ scroll-snap-align:center; }
     position:sticky; top:52px; z-index:5; order:1;
     margin:0 calc(var(--gutter) * -1) 4px; padding:8px 0 16px;
   }
-  .tl-count{ margin-top:8px; }
+  .tl-stats{ max-width:230px; margin-bottom:10px; }
+  .tl-bar{ margin:8px auto 6px; }
   .tl-globe::before{
     content:""; position:absolute; inset:-70px 0 -26px; z-index:-1;
     background:linear-gradient(180deg,

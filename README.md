@@ -60,18 +60,17 @@ d'affichage plein écran.
 
 ## Mettre en ligne sur GitHub Pages
 
+Le contenu du site est à la racine de ce dépôt. Il suffit de pousser sur
+`main` :
+
 ```bash
-cd site-repo
-git init
 git add .
-git commit -m "Site initial"
-git branch -M main
-git remote add origin https://github.com/<ton-pseudo>/<nom-du-repo>.git
-git push -u origin main
+git commit -m "Mise à jour du site"
+git push
 ```
 
-Puis sur GitHub : Settings → Pages → Source : "Deploy from a branch",
-branche `main`, dossier `/ (root)`. Le site sera en ligne à
+Sur GitHub : Settings → Pages → Source : "Deploy from a branch", branche
+`main`, dossier `/ (root)`. Le site sera en ligne à
 `https://<ton-pseudo>.github.io/<nom-du-repo>/` en une à deux minutes.
 
 Pour les mises à jour suivantes (nouveau pays, nouvelles photos) :

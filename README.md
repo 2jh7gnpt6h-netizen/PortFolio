@@ -5,7 +5,9 @@
 ```
 index.html                    coquille HTML (nav + intro + lightbox), tout le contenu est injecté par JS
 assets/css/style.css          tous les styles
-assets/js/data.js             les carnets, expositions et pays visités — le seul fichier à modifier pour ajouter du contenu
+assets/data/content.json      TOUT le contenu : carnets, expositions, textes du site
+admin.html                    l'interface d'administration (non listée sur le site)
+assets/js/admin.js            son code : édition + publication vers GitHub
 assets/js/app.js              routage (#home, #carnet/oman, #expositions, #carte...) + mise en page des photos
 assets/js/globe.js            le globe interactif (intro plein écran et page Carte)
 assets/data/countries-110m.json  contours des pays (Natural Earth / world-atlas, domaine public)
@@ -13,30 +15,68 @@ assets/vendor/*.min.js        d3-array, d3-geo, topojson-client — embarqués, 
 images/<pays>/*.jpg           les photos, un sous-dossier par carnet
 ```
 
-## Ajouter un pays (ex : Japon, 10 photos)
+## Modifier le site sans toucher au code
+
+Le site est statique : il n'y a pas de serveur, donc pas de « compte
+administrateur » au sens classique. Un mot de passe écrit dans le JavaScript
+serait lisible par n'importe quel visiteur et ne protégerait rien.
+
+L'administration passe donc par **GitHub lui-même**, avec un jeton d'accès
+personnel comme clé. Le jeton reste dans le navigateur, c'est GitHub qui le
+valide, et il se révoque à tout moment.
+
+### Première fois
+
+1. Créer un jeton sur
+   [github.com → Fine-grained personal access token](https://github.com/settings/personal-access-tokens/new) :
+   - *Repository access* : **Only select repositories** → ce dépôt
+   - *Repository permissions* → **Contents : Read and write**
+   - donner une date d'expiration (il faudra le recréer ensuite)
+2. Ouvrir `https://<ton-pseudo>.github.io/<nom-du-repo>/admin.html`
+3. Coller le jeton. Il est mémorisé sur cet appareil.
+
+### Ensuite
+
+- **Carnets** : titre, lieu, année, étiquettes, pays sur le globe, photo de
+  couverture, notes intercalées.
+- **Photographies** : dépose des fichiers, ils sont **redimensionnés à 2400 px
+  dans le navigateur** avant envoi. Réordonner, pivoter, légender, supprimer.
+  La rotation réécrit le fichier : c'est ce qu'il faut pour les photos
+  enregistrées en paysage sans métadonnée d'orientation.
+- **Ajouter un pays** : bouton « Ajouter », choisir le pays dans la liste. Le
+  globe s'allume tout seul, aucun code à écrire.
+- **Expositions** : créer, choisir les photos parmi tous les carnets.
+- **Textes du site** : tout ce qui est écrit en dur sur les pages.
+
+« Publier » envoie **un seul commit**, même avec trente photos, et GitHub Pages
+republie le site en une à deux minutes.
+
+Note : `admin.html` est accessible à tous, mais sans jeton valide elle ne
+permet rien — ni de lire quoi que ce soit de privé, ni d'écrire.
+
+## Ajouter un pays à la main (sans l'administration)
 
 1. Créer `images/japon/` et y déposer les photos, idéalement redimensionnées
    (voir plus bas — ne pas mettre les fichiers bruts de l'appareil).
-2. Ouvrir `assets/js/data.js` et ajouter un objet dans `CARNETS`, sur le
-   modèle de celui d'Oman :
+2. Ouvrir `assets/data/content.json` et ajouter un objet dans `carnets`, sur
+   le modèle de celui d'Oman :
 
-```js
+```json
 {
-  slug: "japon",
-  title: "Japon",
-  place: "Tokyo / Kyoto",
-  year: 2026,
-  tags: ["Ville", "Temples"],
-  countryCode: "jp",          // code ISO alpha-2, allume le pays sur le globe
-  hero: "images/japon/01.jpg",
-  heroAlt: "...",
-  thumb: "images/japon/01.jpg",
-  photos: [
-    { file: "images/japon/01.jpg", alt: "...", cap: "...", w: 2400, h: 1600, meta: {} },
-    { file: "images/japon/02.jpg", alt: "...", cap: "...", w: 1600, h: 2400, meta: {} },
-    // ... jusqu'à 10
+  "slug": "japon",
+  "title": "Japon",
+  "place": "Tokyo / Kyoto",
+  "year": "2026",
+  "tags": ["Ville", "Temples"],
+  "countryCode": "jp",
+  "hero": "images/japon/01.jpg",
+  "heroAlt": "...",
+  "thumb": "images/japon/01.jpg",
+  "photos": [
+    { "file": "images/japon/01.jpg", "alt": "...", "cap": "...", "w": 2400, "h": 1600, "meta": {} },
+    { "file": "images/japon/02.jpg", "alt": "...", "cap": "...", "w": 1600, "h": 2400, "meta": {} }
   ],
-  notes: [] // optionnel : phrases italiques insérées entre les photos
+  "notes": []
 }
 ```
 

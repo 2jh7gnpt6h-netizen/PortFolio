@@ -302,12 +302,13 @@
         draw();
         return;
       }
-      var hit = hitTest(pt);
-      // Le globe se fige dès qu'un pays est survolé : sans cela la cible
-      // s'échappe sous le curseur entre le survol et le clic. L'élan en
-      // cours est coupé pour la même raison.
-      hoverPause = !!hit;
-      if (hit && glide) { glide = null; spinPaused = true; }
+      // Le globe se fige dès que le curseur entre sur la sphère — pas
+      // seulement une fois sur un pays : sinon la cible s'échappe pendant
+      // qu'on la vise, et un petit pays devient impossible à cliquer.
+      var onSphere = !!invertPoint(pt);
+      hoverPause = onSphere;
+      var hit = onSphere ? hitTest(pt) : null;
+      if (onSphere && glide) { glide = null; spinPaused = true; }
       if ((hit && hit.code) !== (hovered && hovered.code)) {
         hovered = hit;
         canvas.style.cursor = hit ? "pointer" : "grab";

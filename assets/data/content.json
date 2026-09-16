@@ -1,0 +1,191 @@
+{
+  "site": {
+    "brand": "Rémy",
+    "documentTitle": "Rémy — Carnets",
+    "description": "Carnets de voyage photographiques — un lieu, une lumière, quelques images qui restent.",
+    "kicker": "Carnets de voyage",
+    "introTitle": "Des lieux traversés,\ngardés en images.",
+    "introHint": "Tournez le globe, touchez un pays.",
+    "enterLabel": "Entrer",
+    "homeHeading": "Des lieux traversés, gardés en images.",
+    "lede": "Consultant dans la vie active, photographe le reste du temps. Ce site rassemble mes carnets de voyage — un lieu, une lumière, quelques images qui restent une fois le sac reposé.",
+    "footerName": "Rémy — carnets de voyage",
+    "year": "2026"
+  },
+  "carnets": [
+    {
+      "slug": "oman",
+      "title": "Oman",
+      "place": "Mascate",
+      "subtitle": "Grande mosquée",
+      "year": 2026,
+      "tags": [
+        "Architecture",
+        "Lumière"
+      ],
+      "countryCode": "om",
+      "hero": "images/oman/1979.jpg",
+      "heroAlt": "Passage voûté aux arches successives, lumière rasante, Mascate",
+      "thumb": "images/oman/2030.jpg",
+      "photos": [
+        {
+          "file": "images/oman/2030.jpg",
+          "alt": "Le dôme et le minaret principal de la grande mosquée, ciel dégagé",
+          "cap": "Le dôme, depuis la cour",
+          "w": 2400,
+          "h": 1600,
+          "meta": {}
+        },
+        {
+          "file": "images/oman/1996.jpg",
+          "alt": "Façade et dôme ajouré de la mosquée, vue en contre-plongée",
+          "cap": "Façade nord",
+          "w": 2400,
+          "h": 1600,
+          "meta": {}
+        },
+        {
+          "file": "images/oman/1998.jpg",
+          "alt": "Un visiteur traverse la cour vers l'arche centrale sous le minaret",
+          "cap": "La cour, en fin de matinée",
+          "w": 1600,
+          "h": 2400,
+          "meta": {}
+        },
+        {
+          "file": "images/oman/2020.jpg",
+          "alt": "Vue en contre-plongée serrée sur la tour du minaret, motifs géométriques",
+          "cap": "Le minaret, de près",
+          "w": 1600,
+          "h": 2400,
+          "meta": {}
+        },
+        {
+          "file": "images/oman/1979.jpg",
+          "alt": "Passage voûté aux arches successives, lumière rasante",
+          "cap": "Les arcades, lumière de fin de journée",
+          "w": 1600,
+          "h": 2400,
+          "meta": {}
+        }
+      ],
+      "notes": [
+        {
+          "afterGroup": 0,
+          "text": "On arrive par la chaleur et le silence. La pierre claire renvoie la lumière avant même d'entrer."
+        },
+        {
+          "afterGroup": 1,
+          "text": "Chaque minaret raconte une échelle différente selon l'angle d'où on le regarde.",
+          "align": "right"
+        }
+      ]
+    },
+    {
+      "slug": "indonesie",
+      "title": "Indonésie",
+      "place": "Indonésie",
+      "year": 2026,
+      "tags": [
+        "Nature",
+        "Volcans",
+        "Temples"
+      ],
+      "countryCode": "id",
+      "hero": "images/indonesie/DSCF3072.jpeg",
+      "heroAlt": "",
+      "thumb": "images/indonesie/DSCF3072.jpeg",
+      "photos": [
+        {
+          "file": "images/indonesie/DSCF3019.jpg",
+          "alt": "",
+          "cap": "",
+          "w": 2400,
+          "h": 1600,
+          "meta": {}
+        },
+        {
+          "file": "images/indonesie/DSCF3072.jpeg",
+          "alt": "",
+          "cap": "",
+          "w": 1600,
+          "h": 2400,
+          "meta": {}
+        },
+        {
+          "file": "images/indonesie/DSCF3913.jpg",
+          "alt": "",
+          "cap": "",
+          "w": 1600,
+          "h": 2400,
+          "meta": {}
+        },
+        {
+          "file": "images/indonesie/DSCF4138.jpg",
+          "alt": "",
+          "cap": "",
+          "w": 1600,
+          "h": 2400,
+          "meta": {}
+        },
+        {
+          "file": "images/indonesie/DSCF4289.jpg",
+          "alt": "",
+          "cap": "",
+          "w": 1600,
+          "h": 2400,
+          "meta": {}
+        },
+        {
+          "file": "images/indonesie/DSCF5241.jpg",
+          "alt": "",
+          "cap": "",
+          "w": 1600,
+          "h": 2400,
+          "meta": {}
+        },
+        {
+          "file": "images/indonesie/DSCF5389.jpg",
+          "alt": "",
+          "cap": "",
+          "w": 1600,
+          "h": 2400,
+          "meta": {}
+        }
+      ],
+      "notes": []
+    }
+  ],
+  "expositions": [
+    {
+      "slug": "pierre-lumiere",
+      "title": "Pierre et lumière",
+      "place": "Mascate, Oman",
+      "thumb": "images/oman/1979.jpg",
+      "note": "Trois images de la même mosquée, choisies pour la texture de la pierre et la façon dont la lumière change d'une heure à l'autre.",
+      "photos": [
+        {
+          "file": "images/oman/2020.jpg",
+          "alt": "Vue en contre-plongée serrée sur la tour du minaret",
+          "cap": "Le minaret, milieu de journée",
+          "w": 1600,
+          "h": 2400
+        },
+        {
+          "file": "images/oman/1996.jpg",
+          "alt": "Façade et dôme ajouré de la mosquée",
+          "cap": "La façade nord",
+          "w": 2400,
+          "h": 1600
+        },
+        {
+          "file": "images/oman/1979.jpg",
+          "alt": "Passage voûté aux arches successives",
+          "cap": "Les arcades, fin de journée",
+          "w": 1600,
+          "h": 2400
+        }
+      ]
+    }
+  ]
+}

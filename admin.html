@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>Administration — Carnets</title>
+<link rel="icon" href="data:,">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..600&family=Archivo:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/admin.css">
+</head>
+<body>
+
+<header class="bar">
+  <span class="bar-title serif">Carnets <em>— administration</em></span>
+  <div class="bar-right">
+    <span class="who" id="who"></span>
+    <span class="pending" id="pending" hidden></span>
+    <button class="btn ghost" id="reloadBtn" hidden>Recharger</button>
+    <button class="btn primary" id="saveBtn" hidden disabled>Publier</button>
+  </div>
+</header>
+
+<!-- Écran de connexion -->
+<main class="auth" id="auth">
+  <div class="card">
+    <h1 class="serif">Connexion</h1>
+    <p class="muted">
+      Cette page écrit directement dans le dépôt GitHub du site. La clé, c'est un
+      <strong>jeton d'accès personnel</strong> : il reste dans ce navigateur (rien n'est
+      envoyé ailleurs, rien n'est enregistré dans le site).
+    </p>
+    <ol class="steps">
+      <li>Ouvrir <a href="https://github.com/settings/personal-access-tokens/new" target="_blank" rel="noopener">github.com → jeton d'accès fin</a></li>
+      <li>Accès : <em>Only select repositories</em> → ce dépôt</li>
+      <li>Permissions → <em>Repository permissions</em> → <strong>Contents : Read and write</strong></li>
+      <li>Générer, copier, coller ci-dessous</li>
+    </ol>
+    <label class="field">
+      <span>Jeton</span>
+      <input type="password" id="tokenInput" placeholder="github_pat_…" autocomplete="off" spellcheck="false">
+    </label>
+    <label class="check">
+      <input type="checkbox" id="rememberToken" checked>
+      <span>Garder le jeton sur cet appareil</span>
+    </label>
+    <button class="btn primary wide" id="loginBtn">Se connecter</button>
+    <p class="error" id="authError" hidden></p>
+    <p class="muted small">
+      Un jeton se révoque à tout moment depuis GitHub. Si tu es sur un appareil
+      partagé, décoche la case : il sera oublié à la fermeture de l'onglet.
+    </p>
+  </div>
+</main>
+
+<!-- Espace de travail -->
+<div class="workspace" id="workspace" hidden>
+  <nav class="tabs" id="tabs">
+    <button class="tab is-on" data-tab="carnets">Carnets</button>
+    <button class="tab" data-tab="expos">Expositions</button>
+    <button class="tab" data-tab="site">Textes du site</button>
+  </nav>
+
+  <section class="panel" data-panel="carnets">
+    <aside class="side">
+      <div class="side-head">
+        <h2>Pays</h2>
+        <button class="btn small" id="addCarnet">Ajouter</button>
+      </div>
+      <ul class="list" id="carnetList"></ul>
+    </aside>
+    <div class="editor" id="carnetEditor"></div>
+  </section>
+
+  <section class="panel" data-panel="expos" hidden>
+    <aside class="side">
+      <div class="side-head">
+        <h2>Expositions</h2>
+        <button class="btn small" id="addExpo">Ajouter</button>
+      </div>
+      <ul class="list" id="expoList"></ul>
+    </aside>
+    <div class="editor" id="expoEditor"></div>
+  </section>
+
+  <section class="panel solo-panel" data-panel="site" hidden>
+    <div class="editor" id="siteEditor"></div>
+  </section>
+</div>
+
+<div class="modal" id="modal" hidden>
+  <div class="modal-box">
+    <header class="modal-head">
+      <h3 id="modalTitle"></h3>
+      <button class="btn ghost small" id="modalClose">Fermer</button>
+    </header>
+    <div class="modal-body" id="modalBody"></div>
+    <footer class="modal-foot" id="modalFoot"></footer>
+  </div>
+</div>
+
+<div class="toast" id="toast" hidden></div>
+
+<script src="assets/js/admin.js"></script>
+</body>
+</html>

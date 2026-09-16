@@ -5,6 +5,12 @@
   var nav = document.getElementById("mainNav");
   var topBar = document.getElementById("topBar");
 
+  // Contenu du site. Il vit dans assets/data/content.json pour que l'admin
+  // puisse le réécrire : générer du JSON est sûr, générer du JS ne l'est pas.
+  var CARNETS = [];
+  var EXPOSITIONS = [];
+  var SITE = {};
+
   function esc(s) {
     return (s || "").replace(/[&<>"']/g, function (c) {
       return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c];
@@ -127,8 +133,8 @@
       "</div>" +
       (introEnabled ? "</div>" : "") +
       '<div class="intro-block"><div class="intro-grid">' +
-        '<h2 class="serif reveal">Des lieux traversés, gardés en images.</h2>' +
-        '<p class="lede reveal">Consultant dans la vie active, photographe le reste du temps. Ce site rassemble mes carnets de voyage — un lieu, une lumière, quelques images qui restent une fois le sac reposé.</p>' +
+        '<h2 class="serif reveal">' + esc(SITE.homeHeading || "") + "</h2>" +
+        '<p class="lede reveal">' + esc(SITE.lede || "") + "</p>" +
       "</div></div>" +
       '<div class="section-head"><h2 class="serif">Carnets</h2><span class="count">' + CARNETS.length + " publié" + (CARNETS.length > 1 ? "s" : "") + "</span></div>" +
       '<div class="carnets">' + rows + emptyRowHTML("Prochain carnet") + "</div>" +
@@ -183,7 +189,7 @@
         "</div>" +
         '<div class="essay-note reveal"><p>' + esc(e.note) + "</p></div>" +
         photosEssayHTML(e.photos, [], 0) +
-        '<div class="essay-end"><span>Exposition — 2026</span>' +
+        '<div class="essay-end"><span>Exposition — ' + esc(SITE.year || "") + "</span>" +
           '<a href="#expositions" class="to-back serif" data-nav="expositions">Retour aux expositions ↰</a></div>' +
       "</article>" + footerHTML();
   }
@@ -257,9 +263,9 @@
   }
 
   function footerHTML(extra) {
-    return '<footer class="site"><span>Rémy — carnets de voyage</span>' +
+    return '<footer class="site"><span>' + esc(SITE.footerName || "") + "</span>" +
       (extra ? "<span>" + esc(extra) + "</span>" : "") +
-      "<span>2026</span></footer>";
+      "<span>" + esc(SITE.year || "") + "</span></footer>";
   }
 
   // ---------- Router ----------
@@ -532,5 +538,40 @@
     }
   });
 
-  render();
+  // ---------- Chargement du contenu ----------
+  function applySiteTexts() {
+    var set = function (sel, value) {
+      var el = document.querySelector(sel);
+      if (el && value != null) el.textContent = value;
+    };
+    if (SITE.documentTitle) document.title = SITE.documentTitle;
+    var meta = document.querySelector('meta[name="description"]');
+    if (meta && SITE.description) meta.setAttribute("content", SITE.description);
+    set(".brand", SITE.brand);
+    set(".intro-kicker", SITE.kicker);
+    set(".intro-hint", SITE.introHint);
+    var enter = document.getElementById("introEnter");
+    if (enter && SITE.enterLabel) enter.childNodes[0].nodeValue = SITE.enterLabel + " ";
+    var title = document.querySelector(".intro-title");
+    if (title && SITE.introTitle) {
+      title.innerHTML = SITE.introTitle.split("\n").map(esc).join("<br>");
+    }
+  }
+
+  fetch("assets/data/content.json", { cache: "no-cache" })
+    .then(function (r) {
+      if (!r.ok) throw new Error("content.json " + r.status);
+      return r.json();
+    })
+    .then(function (data) {
+      CARNETS = data.carnets || [];
+      EXPOSITIONS = data.expositions || [];
+      SITE = data.site || {};
+      applySiteTexts();
+      render();
+    })["catch"](function (err) {
+      root.innerHTML = '<div class="page-head"><h1 class="essay-title compact serif">Contenu indisponible</h1>' +
+        '<div class="essay-sub"><span>' + esc(err.message) + "</span></div></div>";
+      if (intro) intro.hidden = true;
+    });
 })();

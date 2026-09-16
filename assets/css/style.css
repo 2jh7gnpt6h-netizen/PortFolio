@@ -145,8 +145,9 @@ footer.site{
 .map-wrap{ max-width:1180px; margin:32px auto 0; padding:0 clamp(20px,4vw,56px); }
 .map-wrap svg{ width:100%; height:auto; display:block; }
 .map-wrap path{ fill:var(--paper-dim); stroke:var(--paper); stroke-width:0.6; }
-.map-wrap path.visited{ fill:var(--stone); cursor:pointer; transition:fill .2s ease; }
-.map-wrap path.visited:hover, .map-wrap path.visited:focus-visible{ fill:var(--deep); }
+.map-wrap path.visited, .map-wrap .visited path{ fill:var(--stone); cursor:pointer; transition:fill .2s ease; }
+.map-wrap path.visited:hover, .map-wrap path.visited:focus-visible,
+.map-wrap .visited:hover path, .map-wrap .visited:focus-visible path{ fill:var(--deep); }
 .map-legend{
   max-width:1180px; margin:22px auto 120px; padding:0 clamp(20px,4vw,56px);
   font-size:13px; display:flex; flex-direction:column; gap:8px; opacity:.85;

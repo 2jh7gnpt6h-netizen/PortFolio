@@ -1,4 +1,5 @@
 {
+  "version": 2,
   "site": {
     "brand": "Rémy",
     "documentTitle": "Rémy — Carnets",
@@ -24,6 +25,7 @@
         "Lumière"
       ],
       "countryCode": "om",
+      "trips": [],
       "hero": "images/oman/1979.jpg",
       "heroAlt": "Passage voûté aux arches successives, lumière rasante, Mascate",
       "thumb": "images/oman/2030.jpg",
@@ -82,6 +84,7 @@
         "Temples"
       ],
       "countryCode": "id",
+      "trips": [],
       "hero": "images/indonesie/DSCF3072.jpeg",
       "heroAlt": "",
       "thumb": "images/indonesie/DSCF3072.jpeg",
@@ -184,6 +187,7 @@
       "year": "2025",
       "tags": [],
       "countryCode": "jp",
+      "trips": [],
       "hero": "images/japon/dscf6432.jpg",
       "heroAlt": "",
       "thumb": "images/japon/dscf6432.jpg",

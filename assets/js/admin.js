@@ -15,6 +15,11 @@
   var CONTENT_PATH = "assets/data/content.json";
   var COUNTRIES_PATH = "assets/data/countries.json";
   var BRANCH = "main";
+  // Version du format de contenu. L'admin réécrit content.json en entier :
+  // un onglet resté ouvert avec du code périmé republierait le fichier sans
+  // les champs qu'il ignore, effaçant silencieusement des données. On refuse
+  // donc de publier un fichier plus récent que ce que cette page sait lire.
+  var SCHEMA = 2;
   // On vise un poids de fichier plutôt qu'une qualité fixe : à qualité
   // constante une photo détaillée pèse deux fois plus qu'une photo douce, et
   // c'est le poids qui ralentit le site et fait échouer les gros envois.
@@ -164,6 +169,11 @@
       fetch(COUNTRIES_PATH).then(function (r) { return r.json(); })
     ]).then(function (res) {
       state.content = JSON.parse(decodeURIComponent(escape(atob(res[0].content.replace(/\n/g, "")))));
+      if ((state.content.version || 1) > SCHEMA) {
+        throw new Error("Cette page d'administration est périmée : le contenu du site " +
+          "utilise un format plus récent. Recharge la page (Ctrl+Maj+R) avant de modifier " +
+          "quoi que ce soit, sinon tu effacerais des informations.");
+      }
       state.countries = res[1];
       state.pendingFiles.clear();
       state.doomedFiles.clear();
@@ -800,6 +810,7 @@
       })
       .then(function (commit) {
         var baseTree = commit.tree.sha;
+        state.content.version = SCHEMA;
         tree.push({
           path: CONTENT_PATH, mode: "100644", type: "blob",
           content: JSON.stringify(state.content, null, 2) + "\n"

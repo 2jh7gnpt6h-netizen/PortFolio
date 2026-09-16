@@ -437,6 +437,7 @@
   var introGlobe = null;
   var introEnabled = !!window.Globe;
   var diving = false;
+  var diveToken = 0;   // invalide une plongée abandonnée (retour arrière)
 
   function introSpan() {
     return Math.max(1, window.innerHeight * 0.85);
@@ -470,12 +471,17 @@
   function diveTo(hit) {
     if (diving) return;
     diving = true;
+    var token = ++diveToken;
     intro.classList.add("is-diving");
     document.body.classList.remove("globe-front");
     var dur = reducedMotion() ? 0 : 1100;
     introGlobe.focusCountry(hit.code, { zoom: 2.6, duration: dur / 1000 }, function () {
+      // Si l'utilisateur est revenu en arrière entre-temps, cette plongée est
+      // caduque : elle ne doit plus naviguer.
+      if (token !== diveToken) return;
       location.hash = "#carnet/" + hit.slug;
       window.setTimeout(function () {
+        if (token !== diveToken) return;
         intro.classList.remove("is-diving");
         diving = false;
         showIntro(false);
@@ -485,6 +491,8 @@
 
   function showIntro(on) {
     if (!introEnabled) return;
+    diveToken++;
+    diving = false;
     intro.hidden = !on;
     document.body.classList.toggle("has-intro", on);
     if (!on) {
@@ -505,7 +513,9 @@
     } else {
       introGlobe.setActive(true);
       introGlobe.resize();
+      introGlobe.reset();
     }
+    intro.classList.remove("is-diving");
     intro.classList.add("is-on");
     updateIntro();
   }

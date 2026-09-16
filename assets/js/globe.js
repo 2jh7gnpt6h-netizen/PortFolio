@@ -431,6 +431,22 @@
       if (done) global.setTimeout(done, dur * 1000);
     }
 
+    // Remet la vue à son état d'arrivée : sans cela, revenir sur l'intro après
+    // une plongée laisse le globe agrandi et figé sur le pays visé.
+    function reset() {
+      focusAnim = null;
+      glide = null;
+      hovered = null;
+      hoverPause = false;
+      spinPaused = false;
+      if (resumeTimer) { global.clearTimeout(resumeTimer); resumeTimer = null; }
+      zoom = 1;
+      projection.scale(baseRadius);
+      canvas.style.cursor = "grab";
+      if (opts.onHover) opts.onHover(null);
+      draw();
+    }
+
     function destroy() {
       destroyed = true;
       stop();
@@ -450,6 +466,7 @@
       draw: draw,
       setHighlights: setHighlights,
       focusCountry: focusCountry,
+      reset: reset,
       // Suspend le rendu quand le globe n'est plus à l'écran (batterie).
       setActive: function (on) { visible = !!on && !document.hidden; lastTime = 0; },
       destroy: destroy,

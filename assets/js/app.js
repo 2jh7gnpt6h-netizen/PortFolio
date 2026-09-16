@@ -203,7 +203,8 @@
           "</span><span>Faites tourner le globe</span></div>" +
       "</div>" +
       '<div class="globe-panel">' +
-        '<div class="globe-holder"><canvas id="carteGlobe" class="globe-canvas"></canvas>' +
+        '<div class="globe-holder"><div class="globe-glass" aria-hidden="true"></div>' +
+          '<canvas id="carteGlobe" class="globe-canvas"></canvas>' +
           '<div class="globe-tip glass" id="carteTip" aria-hidden="true"></div>' +
         "</div>" +
         '<div class="map-legend glass">' +
@@ -220,7 +221,17 @@
     var tip = document.getElementById("carteTip");
     carteGlobe = Globe.create(canvas, {
       highlights: CARNETS.map(function (c) { return { code: c.countryCode, title: c.title, slug: c.slug }; }),
-      fill: 0.9,
+      // Ici le globe se détache sur du papier : rien à laisser voir au
+      // travers, donc une matière plus dense que sur l'intro.
+      palette: {
+        oceanTop: "rgba(58,92,101,0.92)",
+        oceanBottom: "rgba(20,42,50,0.96)",
+        land: "rgba(240,235,222,0.30)",
+        landStroke: "rgba(246,242,232,0.26)",
+        graticule: "rgba(236,230,216,0.12)",
+        limb: "rgba(8,16,20,0.42)",
+        rim: "rgba(255,252,246,0.30)"
+      },
       onHover: function (hit, x, y) { showTip(tip, canvas, hit, x, y); },
       onSelect: function (hit) { location.hash = "#carnet/" + hit.slug; }
     });

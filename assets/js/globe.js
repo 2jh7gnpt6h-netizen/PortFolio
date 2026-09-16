@@ -75,6 +75,9 @@
     var HALO = 1.18;          // rayon du halo, en multiples du rayon du globe
     var baseRadius = 1;
     var zoom = 1;
+    var glide = null;                 // élan après un glisser
+    var GLIDE_DAMPING = 2.1;          // amortissement par seconde
+    var GLIDE_STOP = 6;               // °/s en deçà desquels on s'arrête
 
     var projection = d3.geoOrthographic().precision(0.4);
     var path = d3.geoPath(projection, ctx);
@@ -138,23 +141,24 @@
         ctx.fill();
       }
 
-      // Océan
-      var ocean = ctx.createRadialGradient(cx - r * 0.35, cy - r * 0.4, r * 0.1, cx, cy, r);
-      ocean.addColorStop(0, palette.oceanLight || "#3d6670");
-      ocean.addColorStop(1, palette.oceanDark || "#1e3940");
+      // Océan : à peine teinté, pour laisser voir au travers. Le flou et la
+      // matière « verre » sont fournis par la lentille CSS placée dessous.
+      var ocean = ctx.createLinearGradient(0, cy - r, 0, cy + r);
+      ocean.addColorStop(0, palette.oceanTop || "rgba(86,142,156,0.30)");
+      ocean.addColorStop(1, palette.oceanBottom || "rgba(14,38,48,0.46)");
       fillPath(world.sphere, ocean);
 
       // Parallèles / méridiens
-      strokePath(graticule, palette.graticule || "rgba(236,230,216,0.10)", 0.6);
+      strokePath(graticule, palette.graticule || "rgba(240,236,224,0.13)", 0.6);
 
       // Terres
       ctx.save();
       ctx.beginPath();
       path({ type: "FeatureCollection", features: world.features });
-      ctx.fillStyle = palette.land || "rgba(236,230,216,0.20)";
+      ctx.fillStyle = palette.land || "rgba(246,241,228,0.52)";
       ctx.fill();
-      ctx.strokeStyle = palette.landStroke || "rgba(236,230,216,0.16)";
-      ctx.lineWidth = 0.5;
+      ctx.strokeStyle = palette.landStroke || "rgba(252,249,241,0.40)";
+      ctx.lineWidth = 0.55;
       ctx.stroke();
       ctx.restore();
 
@@ -170,11 +174,11 @@
         strokePath(h.feature, isHot ? "rgba(255,247,231,0.95)" : "rgba(247,236,214,0.55)", isHot ? 1.1 : 0.7);
       });
 
-      // Ombrage du limbe pour donner du volume
-      var shade = ctx.createRadialGradient(cx - r * 0.3, cy - r * 0.34, r * 0.2, cx, cy, r * 1.02);
+      // Épaisseur du verre : un assombrissement discret cantonné au bord,
+      // sans le vernis bombé d'avant.
+      var shade = ctx.createRadialGradient(cx, cy, r * 0.82, cx, cy, r);
       shade.addColorStop(0, "rgba(0,0,0,0)");
-      shade.addColorStop(0.72, "rgba(0,0,0,0)");
-      shade.addColorStop(1, palette.limb || "rgba(10,14,16,0.5)");
+      shade.addColorStop(1, palette.limb || "rgba(12,20,24,0.30)");
       ctx.beginPath();
       ctx.arc(cx, cy, r, 0, Math.PI * 2);
       ctx.fillStyle = shade;
@@ -183,7 +187,7 @@
       // Liseré
       ctx.beginPath();
       ctx.arc(cx, cy, r, 0, Math.PI * 2);
-      ctx.strokeStyle = palette.rim || "rgba(236,230,216,0.35)";
+      ctx.strokeStyle = palette.rim || "rgba(255,252,246,0.42)";
       ctx.lineWidth = 1;
       ctx.stroke();
     }
@@ -208,6 +212,18 @@
           projection.scale(baseRadius * zoom);
         }
         if (focusAnim.t >= 1) { focusAnim = null; }
+        moved = true;
+      } else if (glide) {
+        // Élan : on prolonge le geste puis on l'amortit exponentiellement.
+        rotation[0] = (rotation[0] + glide.vx * dt) % 360;
+        rotation[1] = clamp(rotation[1] + glide.vy * dt, -80, 80);
+        var damp = Math.exp(-GLIDE_DAMPING * dt);
+        glide.vx *= damp;
+        glide.vy *= damp;
+        if (Math.abs(glide.vx) < GLIDE_STOP && Math.abs(glide.vy) < GLIDE_STOP) {
+          glide = null;
+          spinPaused = false;      // la rotation de fond reprend la main
+        }
         moved = true;
       } else if (spin && !spinPaused && !hoverPause) {
         rotation[0] = (rotation[0] + spin * dt) % 360;
@@ -248,6 +264,7 @@
 
     // ---------- Interactions ----------
     var dragging = false, dragMoved = 0, lastPt = null, pointerId = null;
+    var lastMoveT = 0, velX = 0, velY = 0;
 
     function onPointerDown(evt) {
       if (evt.button != null && evt.button !== 0) return;
@@ -255,7 +272,10 @@
       dragMoved = 0;
       lastPt = localPoint(evt);
       pointerId = evt.pointerId;
+      lastMoveT = (global.performance || Date).now();
+      velX = velY = 0;
       spinPaused = true;
+      glide = null;
       focusAnim = null;
       if (canvas.setPointerCapture && pointerId != null) {
         try { canvas.setPointerCapture(pointerId); } catch (e) {}
@@ -268,17 +288,26 @@
       if (dragging) {
         var k = 80 / projection.scale();
         var dx = pt[0] - lastPt[0], dy = pt[1] - lastPt[1];
+        var now = (global.performance || Date).now();
+        var ms = Math.max(8, now - lastMoveT);
         dragMoved += Math.abs(dx) + Math.abs(dy);
         rotation[0] = (rotation[0] + dx * k) % 360;
         rotation[1] = clamp(rotation[1] - dy * k, -80, 80);
+        // Vitesse lissée, en degrés/seconde : sert d'élan au relâchement.
+        var mix = 0.72;
+        velX = velX * (1 - mix) + (dx * k / ms * 1000) * mix;
+        velY = velY * (1 - mix) + (-dy * k / ms * 1000) * mix;
         lastPt = pt;
+        lastMoveT = now;
         draw();
         return;
       }
       var hit = hitTest(pt);
       // Le globe se fige dès qu'un pays est survolé : sans cela la cible
-      // s'échappe sous le curseur entre le survol et le clic.
+      // s'échappe sous le curseur entre le survol et le clic. L'élan en
+      // cours est coupé pour la même raison.
       hoverPause = !!hit;
+      if (hit && glide) { glide = null; spinPaused = true; }
       if ((hit && hit.code) !== (hovered && hovered.code)) {
         hovered = hit;
         canvas.style.cursor = hit ? "pointer" : "grab";
@@ -293,8 +322,20 @@
       if (!dragging) return;
       dragging = false;
       canvas.classList.remove("is-dragging");
+      // Un geste franc lance l'élan ; un geste mou laisse simplement la
+      // rotation de fond reprendre après un temps mort.
+      var speed = Math.abs(velX) + Math.abs(velY);
+      if (speed > GLIDE_STOP && !reducedMotion()) {
+        var cap = 900;
+        glide = {
+          vx: clamp(velX, -cap, cap),
+          vy: clamp(velY, -cap, cap)
+        };
+      }
       if (resumeTimer) global.clearTimeout(resumeTimer);
-      resumeTimer = global.setTimeout(function () { spinPaused = false; }, 2600);
+      resumeTimer = global.setTimeout(function () {
+        if (!glide) spinPaused = false;
+      }, 2600);
     }
 
     function onPointerUp(evt) {
@@ -369,6 +410,7 @@
       var dur = config.duration || 0.85;
 
       spinPaused = true;
+      glide = null;
       if (reducedMotion()) {
         rotation[0] = target[0]; rotation[1] = target[1];
         zoom = targetZoom;

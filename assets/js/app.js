@@ -445,6 +445,7 @@
       a.classList.toggle("is-active", a.getAttribute("data-view") === navGroup(hash));
     });
     document.body.classList.toggle("on-home", hash === "home");
+    document.documentElement.classList.toggle("snap", hash === "chronologie");
     var tlLink = nav.querySelector('[data-view="chronologie"]');
     if (tlLink) tlLink.hidden = allTrips().length === 0;
     window.scrollTo(0, 0);

@@ -479,6 +479,13 @@ footer.site{
   .globe-panel{ grid-template-columns:1fr; }
   .globe-holder{ max-width:min(78vw,420px); }
 }
+@media (max-width:620px){
+  header.top{ justify-content:center; padding:12px var(--gutter); }
+  header.top .brand{ display:none; }
+  header.top .nav{ gap:1px; padding:5px; }
+  header.top .nav a{ padding:6px 10px; font-size:12px; }
+}
+
 @media (max-width:760px){
   :root{ --maxh:66vh; }
   .intro-grid{ grid-template-columns:1fr; gap:22px; }
@@ -503,6 +510,10 @@ footer.site{
   .reveal{ opacity:1; transform:none; }
   .hero img{ transform:none; opacity:1; }
 }
+
+html.snap{ scroll-snap-type:y proximity; scroll-padding-top:clamp(120px,26vh,300px); }
+html.snap .tl-entry{ scroll-snap-align:center; }
+@media (prefers-reduced-motion: reduce){ html.snap{ scroll-snap-type:none; } }
 
 /* ================= CHRONOLOGIE =================
    Ruban vertical, du plus récent au plus ancien. Le globe reste collé à
@@ -561,9 +572,15 @@ footer.site{
 .tl-card:hover .tl-go{ opacity:1; transform:none; }
 
 @media (max-width:900px){
-  .tl-wrap{ grid-template-columns:1fr; }
-  .tl-globe{ position:static; order:1; margin-bottom:10px; }
-  .tl-globe-inner{ width:min(64vw,300px); }
+  .tl-wrap{ grid-template-columns:1fr; gap:0; }
+  .tl-globe{
+    position:sticky; top:52px; z-index:5; order:1;
+    margin:0 calc(var(--gutter) * -1) 4px; padding:8px 0 26px;
+    /* La zone opaque doit couvrir toute la sphère : sinon une entrée qui
+       défile dessous transparaît au travers du globe. */
+    background:linear-gradient(180deg, var(--paper) 86%, rgba(236,230,216,0));
+  }
+  .tl-globe-inner{ width:min(52vw,230px); }
   .tl-track{ order:2; }
   .tl-card{ grid-template-columns:92px minmax(0,1fr); }
   .tl-thumb{ width:92px; }

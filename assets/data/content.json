@@ -89,7 +89,12 @@
         "Temples"
       ],
       "countryCode": "id",
-      "trips": [],
+      "trips": [
+        {
+          "from": "2026-05-11",
+          "to": "2026-06-01"
+        }
+      ],
       "hero": "images/indonesie/DSCF3072.jpeg",
       "heroAlt": "",
       "thumb": "images/indonesie/DSCF3072.jpeg",

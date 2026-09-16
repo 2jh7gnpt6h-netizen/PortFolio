@@ -51,6 +51,27 @@ const CARNETS = [
       { afterGroup: 0, text: "On arrive par la chaleur et le silence. La pierre claire renvoie la lumière avant même d'entrer." },
       { afterGroup: 1, text: "Chaque minaret raconte une échelle différente selon l'angle d'où on le regarde.", align: "right" }
     ]
+  },
+  {
+    slug: "indonesie",
+    title: "Indonésie",
+    place: "Indonésie",
+    year: 2026,
+    tags: ["Nature", "Volcans", "Temples"],
+    countryCode: "id", // code ISO utilisé par la carte (assets/img/world-map.svg)
+    hero: "images/indonesie/DSCF3072.jpeg",
+    heroAlt: "",
+    thumb: "images/indonesie/DSCF3072.jpeg",
+    photos: [
+      { file: "images/indonesie/DSCF3019.jpg", alt: "", cap: "", meta: {} },
+      { file: "images/indonesie/DSCF3072.jpeg", alt: "", cap: "", meta: {} },
+      { file: "images/indonesie/DSCF3913.jpg", alt: "", cap: "", meta: {} },
+      { file: "images/indonesie/DSCF4138.jpg", alt: "", cap: "", meta: {} },
+      { file: "images/indonesie/DSCF4289.jpg", alt: "", cap: "", meta: {} },
+      { file: "images/indonesie/DSCF5241.jpg", alt: "", cap: "", meta: {} },
+      { file: "images/indonesie/DSCF5389.jpg", alt: "", cap: "", meta: {} }
+    ],
+    notes: []
   }
 ];
 

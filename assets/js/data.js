@@ -59,9 +59,9 @@ const CARNETS = [
     year: 2026,
     tags: ["Nature", "Volcans", "Temples"],
     countryCode: "id", // code ISO utilisé par la carte (assets/img/world-map.svg)
-    hero: "images/indonesie/DSCF5241.jpg",
+    hero: "images/indonesie/DSCF3072.jpg",
     heroAlt: "",
-    thumb: "images/indonesie/DSCF4289.jpg",
+    thumb: "images/indonesie/DSCF3072.jpg",
     photos: [
       { file: "images/indonesie/DSCF3019.jpg", alt: "", cap: "", meta: {} },
       { file: "images/indonesie/DSCF3072.jpeg", alt: "", cap: "", meta: {} },

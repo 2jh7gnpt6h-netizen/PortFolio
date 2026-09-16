@@ -16,7 +16,7 @@
   "carnets": [
     {
       "slug": "oman",
-      "title": "Oman II",
+      "title": "Oman",
       "place": "Mascate",
       "subtitle": "Grande mosquée",
       "year": 2026,
@@ -329,9 +329,9 @@
       "year": "2025",
       "tags": [],
       "countryCode": "om",
-      "hero": "images/oman-i/dscf0495.jpg",
+      "hero": "images/oman-i/dscf0619.jpg",
       "heroAlt": "",
-      "thumb": "images/oman-i/dscf0495.jpg",
+      "thumb": "images/oman-i/dscf0619.jpg",
       "trips": [
         {
           "from": "2025-09-30",

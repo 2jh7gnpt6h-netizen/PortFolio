@@ -25,7 +25,12 @@
         "Lumière"
       ],
       "countryCode": "om",
-      "trips": [],
+      "trips": [
+        {
+          "from": "2026-03-14",
+          "to": "2026-03-23"
+        }
+      ],
       "hero": "images/oman/1979.jpg",
       "heroAlt": "Passage voûté aux arches successives, lumière rasante, Mascate",
       "thumb": "images/oman/2030.jpg",

@@ -1429,6 +1429,162 @@
         }
       ],
       "notes": []
+    },
+    {
+      "slug": "maroc",
+      "title": "Maroc",
+      "place": "Maroc",
+      "year": "2022",
+      "tags": [],
+      "countryCode": "ma",
+      "hero": "images/maroc/img-1327.jpg",
+      "heroAlt": "",
+      "thumb": "images/maroc/img-1327.jpg",
+      "trips": [
+        {
+          "from": "2022-10-01",
+          "to": "2022-10-08"
+        }
+      ],
+      "photos": [
+        {
+          "file": "images/maroc/img-1327.jpg",
+          "alt": "",
+          "cap": "",
+          "w": 2000,
+          "h": 1500,
+          "meta": {}
+        },
+        {
+          "file": "images/maroc/img-1321.jpg",
+          "alt": "",
+          "cap": "",
+          "w": 2400,
+          "h": 1800,
+          "meta": {}
+        },
+        {
+          "file": "images/maroc/img-0718.jpg",
+          "alt": "",
+          "cap": "",
+          "w": 1800,
+          "h": 2400,
+          "meta": {}
+        },
+        {
+          "file": "images/maroc/dsc-0584.jpg",
+          "alt": "",
+          "cap": "",
+          "w": 2000,
+          "h": 1330,
+          "meta": {}
+        },
+        {
+          "file": "images/maroc/dsc-0655.jpg",
+          "alt": "",
+          "cap": "",
+          "w": 2400,
+          "h": 1596,
+          "meta": {}
+        },
+        {
+          "file": "images/maroc/dsc-0714.jpg",
+          "alt": "",
+          "cap": "",
+          "w": 2400,
+          "h": 1596,
+          "meta": {}
+        },
+        {
+          "file": "images/maroc/img-1471.jpg",
+          "alt": "",
+          "cap": "",
+          "w": 2400,
+          "h": 1596,
+          "meta": {}
+        },
+        {
+          "file": "images/maroc/img-1341.jpg",
+          "alt": "",
+          "cap": "",
+          "w": 2400,
+          "h": 1596,
+          "meta": {}
+        },
+        {
+          "file": "images/maroc/dsc-0794.jpg",
+          "alt": "",
+          "cap": "",
+          "w": 2400,
+          "h": 1596,
+          "meta": {}
+        },
+        {
+          "file": "images/maroc/dsc-0802.jpg",
+          "alt": "",
+          "cap": "",
+          "w": 2400,
+          "h": 1596,
+          "meta": {}
+        },
+        {
+          "file": "images/maroc/img-1373.jpg",
+          "alt": "",
+          "cap": "",
+          "w": 1596,
+          "h": 2400,
+          "meta": {}
+        },
+        {
+          "file": "images/maroc/dsc-0813.jpg",
+          "alt": "",
+          "cap": "",
+          "w": 2400,
+          "h": 1596,
+          "meta": {}
+        },
+        {
+          "file": "images/maroc/dsc-0811.jpg",
+          "alt": "",
+          "cap": "",
+          "w": 1596,
+          "h": 2400,
+          "meta": {}
+        },
+        {
+          "file": "images/maroc/dsc-0906.jpg",
+          "alt": "",
+          "cap": "",
+          "w": 2400,
+          "h": 1596,
+          "meta": {}
+        },
+        {
+          "file": "images/maroc/dsc-0977.jpg",
+          "alt": "",
+          "cap": "",
+          "w": 1596,
+          "h": 2400,
+          "meta": {}
+        },
+        {
+          "file": "images/maroc/dsc-0836.jpg",
+          "alt": "",
+          "cap": "",
+          "w": 2400,
+          "h": 1596,
+          "meta": {}
+        },
+        {
+          "file": "images/maroc/img-1337.jpg",
+          "alt": "",
+          "cap": "",
+          "w": 1275,
+          "h": 1700,
+          "meta": {}
+        }
+      ],
+      "notes": []
     }
   ],
   "expositions": [

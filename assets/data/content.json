@@ -1585,6 +1585,258 @@
         }
       ],
       "notes": []
+    },
+    {
+      "slug": "athenes",
+      "title": "Athènes",
+      "place": "Athènes",
+      "year": "2022",
+      "tags": [],
+      "countryCode": "gr",
+      "hero": "images/athenes/dsc-0172.jpg",
+      "heroAlt": "",
+      "thumb": "images/athenes/dsc-0172.jpg",
+      "trips": [
+        {
+          "from": "2022-09-24",
+          "to": "2022-09-29"
+        }
+      ],
+      "photos": [
+        {
+          "file": "images/athenes/dsc-0172.jpg",
+          "alt": "",
+          "cap": "",
+          "w": 2000,
+          "h": 1330,
+          "meta": {}
+        },
+        {
+          "file": "images/athenes/img-0015.jpg",
+          "alt": "",
+          "cap": "",
+          "w": 1275,
+          "h": 1700,
+          "meta": {}
+        },
+        {
+          "file": "images/athenes/dsc-0056.jpg",
+          "alt": "",
+          "cap": "",
+          "w": 2400,
+          "h": 1596,
+          "meta": {}
+        },
+        {
+          "file": "images/athenes/dsc-0041.jpg",
+          "alt": "",
+          "cap": "",
+          "w": 1330,
+          "h": 2000,
+          "meta": {}
+        },
+        {
+          "file": "images/athenes/dsc-0152.jpg",
+          "alt": "",
+          "cap": "",
+          "w": 2000,
+          "h": 1330,
+          "meta": {}
+        },
+        {
+          "file": "images/athenes/dsc-0161.jpg",
+          "alt": "",
+          "cap": "",
+          "w": 2400,
+          "h": 1596,
+          "meta": {}
+        },
+        {
+          "file": "images/athenes/dsc-0181.jpg",
+          "alt": "",
+          "cap": "",
+          "w": 2000,
+          "h": 1330,
+          "meta": {}
+        },
+        {
+          "file": "images/athenes/dsc-0209.jpg",
+          "alt": "",
+          "cap": "",
+          "w": 2000,
+          "h": 1330,
+          "meta": {}
+        },
+        {
+          "file": "images/athenes/img-0224.jpg",
+          "alt": "",
+          "cap": "",
+          "w": 1275,
+          "h": 1700,
+          "meta": {}
+        },
+        {
+          "file": "images/athenes/dsc-0416.jpg",
+          "alt": "",
+          "cap": "",
+          "w": 1700,
+          "h": 1130,
+          "meta": {}
+        },
+        {
+          "file": "images/athenes/dsc-0406.jpg",
+          "alt": "",
+          "cap": "",
+          "w": 2000,
+          "h": 1330,
+          "meta": {}
+        },
+        {
+          "file": "images/athenes/dsc-0509.jpg",
+          "alt": "",
+          "cap": "",
+          "w": 1330,
+          "h": 2000,
+          "meta": {}
+        },
+        {
+          "file": "images/athenes/dsc-0535.jpg",
+          "alt": "",
+          "cap": "",
+          "w": 2000,
+          "h": 1330,
+          "meta": {}
+        },
+        {
+          "file": "images/athenes/dsc-0441.jpg",
+          "alt": "",
+          "cap": "",
+          "w": 2400,
+          "h": 1596,
+          "meta": {}
+        },
+        {
+          "file": "images/athenes/dsc-0504.jpg",
+          "alt": "",
+          "cap": "",
+          "w": 2000,
+          "h": 1330,
+          "meta": {}
+        },
+        {
+          "file": "images/athenes/dsc-0626.jpg",
+          "alt": "",
+          "cap": "",
+          "w": 2400,
+          "h": 1596,
+          "meta": {}
+        },
+        {
+          "file": "images/athenes/dsc-0652.jpg",
+          "alt": "",
+          "cap": "",
+          "w": 2400,
+          "h": 1596,
+          "meta": {}
+        },
+        {
+          "file": "images/athenes/img-0324.jpg",
+          "alt": "",
+          "cap": "",
+          "w": 1275,
+          "h": 1700,
+          "meta": {}
+        },
+        {
+          "file": "images/athenes/dsc-0522.jpg",
+          "alt": "",
+          "cap": "",
+          "w": 2400,
+          "h": 1596,
+          "meta": {}
+        },
+        {
+          "file": "images/athenes/dsc-0585.jpg",
+          "alt": "",
+          "cap": "",
+          "w": 2400,
+          "h": 1596,
+          "meta": {}
+        },
+        {
+          "file": "images/athenes/dsc-0604.jpg",
+          "alt": "",
+          "cap": "",
+          "w": 2000,
+          "h": 1330,
+          "meta": {}
+        },
+        {
+          "file": "images/athenes/dsc-0607.jpg",
+          "alt": "",
+          "cap": "",
+          "w": 1700,
+          "h": 1130,
+          "meta": {}
+        },
+        {
+          "file": "images/athenes/dsc-0710.jpg",
+          "alt": "",
+          "cap": "",
+          "w": 2400,
+          "h": 1596,
+          "meta": {}
+        },
+        {
+          "file": "images/athenes/dsc-0545.jpg",
+          "alt": "",
+          "cap": "",
+          "w": 2000,
+          "h": 1330,
+          "meta": {}
+        },
+        {
+          "file": "images/athenes/dsc-0543.jpg",
+          "alt": "",
+          "cap": "",
+          "w": 2400,
+          "h": 1596,
+          "meta": {}
+        },
+        {
+          "file": "images/athenes/dsc-0516.jpg",
+          "alt": "",
+          "cap": "",
+          "w": 2400,
+          "h": 1596,
+          "meta": {}
+        },
+        {
+          "file": "images/athenes/dsc-0571.jpg",
+          "alt": "",
+          "cap": "",
+          "w": 1700,
+          "h": 1130,
+          "meta": {}
+        },
+        {
+          "file": "images/athenes/img-0424.jpg",
+          "alt": "",
+          "cap": "",
+          "w": 1275,
+          "h": 1700,
+          "meta": {}
+        },
+        {
+          "file": "images/athenes/dsc-0630.jpg",
+          "alt": "",
+          "cap": "",
+          "w": 2000,
+          "h": 1330,
+          "meta": {}
+        }
+      ],
+      "notes": []
     }
   ],
   "expositions": [

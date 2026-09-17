@@ -10,7 +10,9 @@ admin.html                    l'interface d'administration (non listée sur le s
 assets/js/admin.js            son code : édition + publication vers GitHub
 assets/js/app.js              routage (#home, #carnet/oman, #expositions, #carte...) + mise en page des photos
 assets/js/globe.js            le globe interactif (intro plein écran et page Carte)
-assets/data/countries-110m.json  contours des pays (Natural Earth / world-atlas, domaine public)
+assets/data/countries-110m.json  contours des pays (Natural Earth / world-atlas, domaine public,
+                              fond 110m complété par les micro-États du 50m)
+assets/data/countries.json    noms français des pays proposés dans l'administration
 assets/vendor/*.min.js        d3-array, d3-geo, topojson-client — embarqués, aucune dépendance réseau
 images/<pays>/*.jpg           les photos, un sous-dossier par carnet
 ```
@@ -49,7 +51,14 @@ valide, et il se révoque à tout moment.
   La rotation réécrit le fichier : c'est ce qu'il faut pour les photos
   enregistrées en paysage sans métadonnée d'orientation.
 - **Ajouter un pays** : bouton « Ajouter », choisir le pays dans la liste. Le
-  globe s'allume tout seul, aucun code à écrire.
+  globe s'allume tout seul, aucun code à écrire. La liste couvre 235 pays et
+  territoires, micro-États compris (Bahreïn, Singapour, Malte, Monaco…) : les
+  plus petits sont dessinés par une pastille dorée, sans quoi ils feraient un
+  pixel et resteraient impossibles à voir comme à cliquer.
+- **Photo d'accueil** : rien à choisir. La grande image du haut est tirée au
+  sort parmi toutes les photos du site à chaque visite, et la légende indique
+  de quel carnet elle vient. La photo de couverture réglée dans un carnet
+  sert toujours pour sa propre page et pour sa vignette.
 - **Expositions** : créer, choisir les photos parmi tous les carnets.
 - **Textes du site** : tout ce qui est écrit en dur sur les pages.
 
@@ -98,7 +107,12 @@ Le contenu (`content.json`) n'est pas concerné : il est demandé en
 
 Rien d'autre à toucher : la page d'accueil, le carnet, le globe et le menu
 se mettent à jour automatiquement. `countryCode` est un code ISO alpha-2 en
-minuscules (om, jp, id, eg, jo, uz...).
+minuscules (om, jp, id, eg, jo, uz...) ; la liste complète des codes reconnus
+est dans `assets/data/countries.json`.
+
+La chronologie compte les pays **une seule fois** : deux carnets qui portent le
+même `countryCode` (« Oman I » et « Oman II ») font deux voyages mais un seul
+pays. Le pourcentage affiché rapporte ce total aux 193 États membres de l'ONU.
 
 `w` et `h` sont les dimensions en pixels de la photo. Elles servent à réserver
 la place avant chargement et surtout à **apparier les photos de même

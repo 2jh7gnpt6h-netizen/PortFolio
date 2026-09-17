@@ -114,10 +114,35 @@
   }
 
   // ---------- Vues ----------
+
+  // Le héros de l'accueil est tiré au sort parmi toutes les photos du site,
+  // tous carnets confondus : plus besoin d'en désigner une. Le tirage est
+  // figé pour la durée de la visite — sans ça, l'image changerait à chaque
+  // retour sur l'accueil, ce qui donnerait le tournis plutôt que la surprise.
+  var heroTire = null;
+  function tirerHero() {
+    if (heroTire) return heroTire;
+    var urne = [];
+    CARNETS.forEach(function (c) {
+      (c.photos || []).forEach(function (ph) {
+        if (ph && ph.file) urne.push({ photo: ph, carnet: c });
+      });
+    });
+    if (urne.length) {
+      heroTire = urne[Math.floor(Math.random() * urne.length)];
+    } else {
+      // Aucune photo nulle part : on retombe sur le héros du dernier carnet.
+      var dernier = CARNETS[CARNETS.length - 1];
+      heroTire = dernier ? { photo: { file: dernier.hero, alt: dernier.heroAlt }, carnet: dernier } : null;
+    }
+    return heroTire;
+  }
+
   function renderHome() {
-    var featured = CARNETS[CARNETS.length - 1];
-    var heroImg = featured ? featured.hero : "";
-    var heroAlt = featured ? featured.heroAlt : "";
+    var tirage = tirerHero();
+    var featured = tirage ? tirage.carnet : null;
+    var heroImg = tirage ? tirage.photo.file || "" : "";
+    var heroAlt = tirage ? tirage.photo.alt || "" : "";
     var rows = CARNETS.map(function (c) { return carnetRowHTML(c, "carnet/" + c.slug); }).join("");
 
     // Avec l'intro, le héros est « collant » : il reste en place derrière le

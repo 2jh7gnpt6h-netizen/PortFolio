@@ -17,7 +17,13 @@
     "mr478 mw454 mx484 my458 mz508 na516 nc540 ne562 ng566 ni558 nl528 no578 np524 nz554 om512 pa591 pe604 pg598 " +
     "ph608 pk586 pl616 pr630 ps275 pt620 py600 qa634 ro642 rs688 ru643 rw646 sa682 sb090 sd729 se752 si705 sk703 " +
     "sl694 sn686 so706 sr740 ss728 sv222 sy760 sz748 td148 tf260 tg768 th764 tj762 tl626 tm795 tn788 tr792 tt780 " +
-    "tw158 tz834 ua804 ug800 us840 uy858 uz860 ve862 vn704 vu548 ye887 za710 zm894 zw716").split(" ")
+    "tw158 tz834 ua804 ug800 us840 uy858 uz860 ve862 vn704 vu548 ye887 za710 zm894 zw716 " +
+    // Micro-États et îles absents du fond 110m d'origine, réinjectés depuis
+    // le 50m : sans eux, impossible de choisir Bahreïn, Malte ou Singapour.
+    "ad020 ag028 ai660 as016 aw533 ax248 bb052 bh048 bl652 bm060 ck184 cv132 cw531 dm212 fm583 fo234 " +
+    "gd308 gg831 gs239 gu316 hk344 hm334 im833 io086 je832 ki296 km174 kn659 ky136 lc662 li438 mc492 " +
+    "mf663 mh584 mo446 mp580 ms500 mt470 mu480 mv462 nf574 nr520 nu570 pf258 pm666 pn612 pw585 sc690 " +
+    "sg702 sh654 sm674 st678 sx534 tc796 to776 va336 vc670 vg092 vi850 wf876 ws882").split(" ")
     .reduce(function (acc, pair) { acc[pair.slice(0, 2)] = pair.slice(2); return acc; }, {});
 
   var WORLD_URL = "assets/data/countries-110m.json";
@@ -108,6 +114,28 @@
       draw();
     }
 
+    // Un point n'est dessinable que s'il regarde vers nous : la projection
+    // renvoie des coordonnées même pour la face cachée du globe.
+    function faces(ll) {
+      return !!ll && d3.geoDistance(ll, [-rotation[0], -rotation[1]]) < Math.PI / 2;
+    }
+
+    // Diamètre du pays une fois projeté, en pixels. Infini/NaN quand il est
+    // entièrement derrière le globe.
+    function projectedSize(feature) {
+      var b = path.bounds(feature);
+      var w = b[1][0] - b[0][0], h = b[1][1] - b[0][1];
+      if (!isFinite(w) || !isFinite(h)) return 0;
+      return Math.max(w, h);
+    }
+
+    // En deçà, un pays ne fait qu'un ou deux pixels : Bahreïn, Singapour,
+    // Malte… On lui substitue une pastille, seule façon de le voir et de le
+    // viser. Proportionnelle au rayon, elle suit le zoom de la plongée.
+    function dotRadius() {
+      return Math.max(2.6, projection.scale() * 0.019);
+    }
+
     function fillPath(geo, style) {
       ctx.beginPath();
       path(geo);
@@ -164,13 +192,27 @@
       ctx.restore();
 
       // Pays visités
+      var dotR = dotRadius();
       highlights.forEach(function (h) {
         if (!h.feature) return;
         var isHot = (hovered && hovered.code === h.code) || h.code === activeCode;
+        var teinte = isHot ? (palette.visitedHot || "#f0d9a8") : (palette.visited || "#c9a063");
         ctx.save();
         ctx.shadowColor = palette.visitedGlow || "rgba(214,173,104,0.75)";
         ctx.shadowBlur = isHot ? 26 : 14;
-        fillPath(h.feature, isHot ? (palette.visitedHot || "#f0d9a8") : (palette.visited || "#c9a063"));
+        fillPath(h.feature, teinte);
+        // Trop petit pour se voir : une pastille prend le relais, à condition
+        // que le pays soit bien sur la face tournée vers nous.
+        if (projectedSize(h.feature) < dotR * 2 && faces(h.centroid)) {
+          var c = projection(h.centroid);
+          ctx.beginPath();
+          ctx.arc(c[0], c[1], isHot ? dotR * 1.25 : dotR, 0, Math.PI * 2);
+          ctx.fillStyle = teinte;
+          ctx.fill();
+          ctx.lineWidth = isHot ? 1.1 : 0.7;
+          ctx.strokeStyle = isHot ? "rgba(255,247,231,0.95)" : "rgba(247,236,214,0.55)";
+          ctx.stroke();
+        }
         ctx.restore();
         strokePath(h.feature, isHot ? "rgba(255,247,231,0.95)" : "rgba(247,236,214,0.55)", isHot ? 1.1 : 0.7);
       });
@@ -260,7 +302,21 @@
         var h = highlights[i];
         if (h.feature && d3.geoContains(h.feature, ll)) return h;
       }
-      return null;
+      // Repêchage : un pays d'un pixel ne se vise pas au polygone près, pas
+      // plus qu'un archipel dont le centre tombe en mer. On retient le plus
+      // proche du doigt, et seulement parmi ceux que le tracé ne suffit pas
+      // à attraper — les grands pays restent réglés au contour.
+      var dotR = dotRadius();
+      var best = null, bestD = dotR * 2.2;
+      for (var j = 0; j < highlights.length; j++) {
+        var m = highlights[j];
+        if (!m.feature || !faces(m.centroid)) continue;
+        if (projectedSize(m.feature) >= dotR * 2) continue;
+        var c = projection(m.centroid);
+        var d = Math.sqrt((c[0] - pt[0]) * (c[0] - pt[0]) + (c[1] - pt[1]) * (c[1] - pt[1]));
+        if (d < bestD) { bestD = d; best = m; }
+      }
+      return best;
     }
 
     // ---------- Interactions ----------
@@ -387,12 +443,14 @@
     function setHighlights(list) {
       highlights = (list || []).map(function (item) {
         var n3 = A2_N3[(item.code || "").toLowerCase()];
+        var feature = world && n3 ? world.byId[n3] : null;
         return {
           code: item.code,
           title: item.title,
           slug: item.slug,
           n3: n3,
-          feature: world && n3 ? world.byId[n3] : null
+          feature: feature,
+          centroid: feature ? d3.geoCentroid(feature) : null
         };
       });
       draw();

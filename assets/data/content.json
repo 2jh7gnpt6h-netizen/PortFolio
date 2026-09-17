@@ -713,6 +713,178 @@
         }
       ],
       "notes": []
+    },
+    {
+      "slug": "bahrein",
+      "title": "Bahreïn",
+      "place": "Manama",
+      "year": "2025",
+      "tags": [],
+      "countryCode": "bh",
+      "hero": "images/bahrein/dscf1163.jpg",
+      "heroAlt": "",
+      "thumb": "images/bahrein/dscf1163.jpg",
+      "trips": [
+        {
+          "from": "2025-12-10",
+          "to": "2025-12-17"
+        }
+      ],
+      "photos": [
+        {
+          "file": "images/bahrein/dscf1163.jpg",
+          "alt": "",
+          "cap": "",
+          "w": 1133,
+          "h": 1700,
+          "meta": {}
+        },
+        {
+          "file": "images/bahrein/dscf1596.jpg",
+          "alt": "",
+          "cap": "",
+          "w": 1133,
+          "h": 1700,
+          "meta": {}
+        },
+        {
+          "file": "images/bahrein/dscf1243.jpg",
+          "alt": "",
+          "cap": "",
+          "w": 1133,
+          "h": 1700,
+          "meta": {}
+        },
+        {
+          "file": "images/bahrein/dscf1268.jpg",
+          "alt": "",
+          "cap": "",
+          "w": 1133,
+          "h": 1700,
+          "meta": {}
+        },
+        {
+          "file": "images/bahrein/img-0402.jpg",
+          "alt": "",
+          "cap": "",
+          "w": 1500,
+          "h": 2000,
+          "meta": {}
+        },
+        {
+          "file": "images/bahrein/dscf1387.jpg",
+          "alt": "",
+          "cap": "",
+          "w": 1333,
+          "h": 2000,
+          "meta": {}
+        },
+        {
+          "file": "images/bahrein/dscf1409.jpg",
+          "alt": "",
+          "cap": "",
+          "w": 1133,
+          "h": 1700,
+          "meta": {}
+        },
+        {
+          "file": "images/bahrein/dscf1441.jpg",
+          "alt": "",
+          "cap": "",
+          "w": 1133,
+          "h": 1700,
+          "meta": {}
+        },
+        {
+          "file": "images/bahrein/dscf1466.jpg",
+          "alt": "",
+          "cap": "",
+          "w": 1133,
+          "h": 1700,
+          "meta": {}
+        },
+        {
+          "file": "images/bahrein/dscf1482.jpg",
+          "alt": "",
+          "cap": "",
+          "w": 1133,
+          "h": 1700,
+          "meta": {}
+        },
+        {
+          "file": "images/bahrein/dscf1487.jpg",
+          "alt": "",
+          "cap": "",
+          "w": 1133,
+          "h": 1700,
+          "meta": {}
+        },
+        {
+          "file": "images/bahrein/dscf1537.jpg",
+          "alt": "",
+          "cap": "",
+          "w": 1133,
+          "h": 1700,
+          "meta": {}
+        },
+        {
+          "file": "images/bahrein/dscf1541.jpg",
+          "alt": "",
+          "cap": "",
+          "w": 1133,
+          "h": 1700,
+          "meta": {}
+        },
+        {
+          "file": "images/bahrein/dscf1543.jpg",
+          "alt": "",
+          "cap": "",
+          "w": 1133,
+          "h": 1700,
+          "meta": {}
+        },
+        {
+          "file": "images/bahrein/dscf1553.jpg",
+          "alt": "",
+          "cap": "",
+          "w": 1133,
+          "h": 1700,
+          "meta": {}
+        },
+        {
+          "file": "images/bahrein/img-0739.jpg",
+          "alt": "",
+          "cap": "",
+          "w": 1275,
+          "h": 1700,
+          "meta": {}
+        },
+        {
+          "file": "images/bahrein/img-0812.jpg",
+          "alt": "",
+          "cap": "",
+          "w": 1800,
+          "h": 2400,
+          "meta": {}
+        },
+        {
+          "file": "images/bahrein/img-0833.jpg",
+          "alt": "",
+          "cap": "",
+          "w": 1275,
+          "h": 1700,
+          "meta": {}
+        },
+        {
+          "file": "images/bahrein/dscf1571.jpg",
+          "alt": "",
+          "cap": "",
+          "w": 1133,
+          "h": 1700,
+          "meta": {}
+        }
+      ],
+      "notes": []
     }
   ],
   "expositions": [

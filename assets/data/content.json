@@ -885,6 +885,266 @@
         }
       ],
       "notes": []
+    },
+    {
+      "slug": "egypte",
+      "title": "Égypte",
+      "place": "Égypte",
+      "year": "2024",
+      "tags": [],
+      "countryCode": "eg",
+      "hero": "images/egypte/img-0459.jpg",
+      "heroAlt": "",
+      "thumb": "images/egypte/img-0459.jpg",
+      "trips": [
+        {
+          "from": "2024-01-27",
+          "to": "2024-02-11"
+        }
+      ],
+      "photos": [
+        {
+          "file": "images/egypte/img-0459.jpg",
+          "alt": "",
+          "cap": "",
+          "w": 2000,
+          "h": 1500,
+          "meta": {}
+        },
+        {
+          "file": "images/egypte/img-0387.jpg",
+          "alt": "",
+          "cap": "",
+          "w": 1275,
+          "h": 1700,
+          "meta": {}
+        },
+        {
+          "file": "images/egypte/img-0316.jpg",
+          "alt": "",
+          "cap": "",
+          "w": 1500,
+          "h": 2000,
+          "meta": {}
+        },
+        {
+          "file": "images/egypte/img-0273.jpg",
+          "alt": "",
+          "cap": "",
+          "w": 2000,
+          "h": 1500,
+          "meta": {}
+        },
+        {
+          "file": "images/egypte/img-0345.jpg",
+          "alt": "",
+          "cap": "",
+          "w": 2400,
+          "h": 1800,
+          "meta": {}
+        },
+        {
+          "file": "images/egypte/img-0380.jpg",
+          "alt": "",
+          "cap": "",
+          "w": 1700,
+          "h": 1275,
+          "meta": {}
+        },
+        {
+          "file": "images/egypte/img-0437.jpg",
+          "alt": "",
+          "cap": "",
+          "w": 2000,
+          "h": 1500,
+          "meta": {}
+        },
+        {
+          "file": "images/egypte/img-0308.jpg",
+          "alt": "",
+          "cap": "",
+          "w": 1700,
+          "h": 1275,
+          "meta": {}
+        },
+        {
+          "file": "images/egypte/img-0424.jpg",
+          "alt": "",
+          "cap": "",
+          "w": 1700,
+          "h": 1275,
+          "meta": {}
+        },
+        {
+          "file": "images/egypte/img-0381.jpg",
+          "alt": "",
+          "cap": "",
+          "w": 1800,
+          "h": 2400,
+          "meta": {}
+        },
+        {
+          "file": "images/egypte/img-0360.jpg",
+          "alt": "",
+          "cap": "",
+          "w": 1700,
+          "h": 1275,
+          "meta": {}
+        },
+        {
+          "file": "images/egypte/img-0325.jpg",
+          "alt": "",
+          "cap": "",
+          "w": 1700,
+          "h": 1275,
+          "meta": {}
+        },
+        {
+          "file": "images/egypte/img-0311.jpg",
+          "alt": "",
+          "cap": "",
+          "w": 1700,
+          "h": 1275,
+          "meta": {}
+        },
+        {
+          "file": "images/egypte/img-0333.jpg",
+          "alt": "",
+          "cap": "",
+          "w": 1700,
+          "h": 1275,
+          "meta": {}
+        },
+        {
+          "file": "images/egypte/img-0411.jpg",
+          "alt": "",
+          "cap": "",
+          "w": 1700,
+          "h": 1275,
+          "meta": {}
+        },
+        {
+          "file": "images/egypte/img-0326.jpg",
+          "alt": "",
+          "cap": "",
+          "w": 2400,
+          "h": 1800,
+          "meta": {}
+        },
+        {
+          "file": "images/egypte/img-0460.jpg",
+          "alt": "",
+          "cap": "",
+          "w": 2000,
+          "h": 1500,
+          "meta": {}
+        },
+        {
+          "file": "images/egypte/img-0283.jpg",
+          "alt": "",
+          "cap": "",
+          "w": 2400,
+          "h": 1800,
+          "meta": {}
+        },
+        {
+          "file": "images/egypte/img-0276.jpg",
+          "alt": "",
+          "cap": "",
+          "w": 1275,
+          "h": 1700,
+          "meta": {}
+        },
+        {
+          "file": "images/egypte/img-0320.jpg",
+          "alt": "",
+          "cap": "",
+          "w": 1700,
+          "h": 1275,
+          "meta": {}
+        },
+        {
+          "file": "images/egypte/img-0412.jpg",
+          "alt": "",
+          "cap": "",
+          "w": 2400,
+          "h": 1800,
+          "meta": {}
+        },
+        {
+          "file": "images/egypte/img-0327.jpg",
+          "alt": "",
+          "cap": "",
+          "w": 1500,
+          "h": 2000,
+          "meta": {}
+        },
+        {
+          "file": "images/egypte/img-0440.jpg",
+          "alt": "",
+          "cap": "",
+          "w": 2000,
+          "h": 1500,
+          "meta": {}
+        },
+        {
+          "file": "images/egypte/img-0448.jpg",
+          "alt": "",
+          "cap": "",
+          "w": 2400,
+          "h": 1800,
+          "meta": {}
+        },
+        {
+          "file": "images/egypte/img-0413.jpg",
+          "alt": "",
+          "cap": "",
+          "w": 2400,
+          "h": 1800,
+          "meta": {}
+        },
+        {
+          "file": "images/egypte/img-9339.jpg",
+          "alt": "",
+          "cap": "",
+          "w": 1700,
+          "h": 1275,
+          "meta": {}
+        },
+        {
+          "file": "images/egypte/img-0378.jpg",
+          "alt": "",
+          "cap": "",
+          "w": 2000,
+          "h": 1500,
+          "meta": {}
+        },
+        {
+          "file": "images/egypte/img-0329.jpg",
+          "alt": "",
+          "cap": "",
+          "w": 1700,
+          "h": 1275,
+          "meta": {}
+        },
+        {
+          "file": "images/egypte/img-0364.jpg",
+          "alt": "",
+          "cap": "",
+          "w": 2400,
+          "h": 1800,
+          "meta": {}
+        },
+        {
+          "file": "images/egypte/img-0279.jpg",
+          "alt": "",
+          "cap": "",
+          "w": 2000,
+          "h": 1500,
+          "meta": {}
+        }
+      ],
+      "notes": []
     }
   ],
   "expositions": [

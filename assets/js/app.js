@@ -143,7 +143,7 @@
     var featured = tirage ? tirage.carnet : null;
     var heroImg = tirage ? tirage.photo.file || "" : "";
     var heroAlt = tirage ? tirage.photo.alt || "" : "";
-    var rows = CARNETS.map(function (c) { return carnetRowHTML(c, "carnet/" + c.slug); }).join("");
+    var rows = carnetsParDate().map(function (c) { return carnetRowHTML(c, "carnet/" + c.slug); }).join("");
 
     // Avec l'intro, le héros est « collant » : il reste en place derrière le
     // globe pendant toute la transition, puis défile normalement. Sans lui,
@@ -249,6 +249,29 @@
     if (!a) return 0;
     if (!b) return 1;
     return Math.round((b - a) / 86400000) + 1;
+  }
+
+  // Date de référence d'un carnet : son voyage le plus récent. À défaut,
+  // l'année seule, placée en fin d'année pour ne pas doubler un voyage daté
+  // du même millésime. À défaut encore, rien du tout.
+  function dateCarnet(c) {
+    var jours = (c.trips || []).map(function (t) { return t.from; })
+      .filter(function (d) { return parseDay(d); }).sort();
+    if (jours.length) return jours[jours.length - 1];
+    return c.year ? String(c.year) + "-00-00" : "";
+  }
+
+  // Les carnets se lisent du plus récent au plus ancien, comme la
+  // chronologie. Ceux qui n'ont pas encore de date ferment la marche, dans
+  // l'ordre où ils ont été créés.
+  function carnetsParDate() {
+    return CARNETS.map(function (c, i) { return { c: c, i: i, d: dateCarnet(c) }; })
+      .sort(function (a, b) {
+        if (a.d && b.d && a.d !== b.d) return a.d < b.d ? 1 : -1;
+        if (!a.d !== !b.d) return a.d ? -1 : 1;
+        return a.i - b.i;
+      })
+      .map(function (x) { return x.c; });
   }
 
   // 193 États membres de l'ONU : la référence courante pour « combien de
@@ -429,7 +452,7 @@
         "</div>" +
         '<div class="map-legend glass">' +
           '<p class="legend-head">Pays visités</p>' +
-          CARNETS.map(function (c) {
+          carnetsParDate().map(function (c) {
             return '<button class="legend-row" data-code="' + esc(c.countryCode) + '" data-slug="' + esc(c.slug) + '">' +
                      '<span class="legend-dot"></span><span class="legend-name">' + esc(c.title) + "</span>" +
                      '<span class="legend-count">' + c.photos.length + "</span></button>";

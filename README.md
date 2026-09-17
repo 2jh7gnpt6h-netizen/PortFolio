@@ -55,6 +55,11 @@ valide, et il se révoque à tout moment.
   territoires, micro-États compris (Bahreïn, Singapour, Malte, Monaco…) : les
   plus petits sont dessinés par une pastille dorée, sans quoi ils feraient un
   pixel et resteraient impossibles à voir comme à cliquer.
+- **Ordre des carnets** : automatique. L'accueil et la légende de la carte
+  classent du voyage le plus récent au plus ancien, comme la chronologie —
+  l'ordre dans lequel tu crées les carnets n'a donc aucune importance. Un
+  carnet daté seulement par son année se range en fin d'année ; un carnet
+  sans aucune date ferme la liste.
 - **Photo d'accueil** : rien à choisir. La grande image du haut est tirée au
   sort parmi toutes les photos du site à chaque visite, et la légende indique
   de quel carnet elle vient. La photo de couverture réglée dans un carnet

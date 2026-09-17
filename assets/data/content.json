@@ -1145,6 +1145,290 @@
         }
       ],
       "notes": []
+    },
+    {
+      "slug": "jordanie",
+      "title": "Jordanie",
+      "place": "Jordanie",
+      "year": "2024",
+      "tags": [],
+      "countryCode": "jo",
+      "hero": "images/jordanie/img-5904.jpg",
+      "heroAlt": "",
+      "thumb": "images/jordanie/img-5904.jpg",
+      "trips": [
+        {
+          "from": "2026-09-16",
+          "to": "2026-09-26"
+        }
+      ],
+      "photos": [
+        {
+          "file": "images/jordanie/img-5904.jpg",
+          "alt": "",
+          "cap": "",
+          "w": 1700,
+          "h": 1275,
+          "meta": {}
+        },
+        {
+          "file": "images/jordanie/img-5899.jpg",
+          "alt": "",
+          "cap": "",
+          "w": 1500,
+          "h": 2000,
+          "meta": {}
+        },
+        {
+          "file": "images/jordanie/img-5978.jpg",
+          "alt": "",
+          "cap": "",
+          "w": 1500,
+          "h": 2000,
+          "meta": {}
+        },
+        {
+          "file": "images/jordanie/img-4620.jpg",
+          "alt": "",
+          "cap": "",
+          "w": 2000,
+          "h": 1500,
+          "meta": {}
+        },
+        {
+          "file": "images/jordanie/img-5961.jpg",
+          "alt": "",
+          "cap": "",
+          "w": 1700,
+          "h": 1275,
+          "meta": {}
+        },
+        {
+          "file": "images/jordanie/img-5921.jpg",
+          "alt": "",
+          "cap": "",
+          "w": 1275,
+          "h": 1700,
+          "meta": {}
+        },
+        {
+          "file": "images/jordanie/img-5945.jpg",
+          "alt": "",
+          "cap": "",
+          "w": 1275,
+          "h": 1700,
+          "meta": {}
+        },
+        {
+          "file": "images/jordanie/img-5959.jpg",
+          "alt": "",
+          "cap": "",
+          "w": 1275,
+          "h": 1700,
+          "meta": {}
+        },
+        {
+          "file": "images/jordanie/img-5892.jpg",
+          "alt": "",
+          "cap": "",
+          "w": 2000,
+          "h": 1500,
+          "meta": {}
+        },
+        {
+          "file": "images/jordanie/img-5957.jpg",
+          "alt": "",
+          "cap": "",
+          "w": 1275,
+          "h": 1700,
+          "meta": {}
+        },
+        {
+          "file": "images/jordanie/img-5983.jpg",
+          "alt": "",
+          "cap": "",
+          "w": 1500,
+          "h": 2000,
+          "meta": {}
+        },
+        {
+          "file": "images/jordanie/img-5955.jpg",
+          "alt": "",
+          "cap": "",
+          "w": 1275,
+          "h": 1700,
+          "meta": {}
+        },
+        {
+          "file": "images/jordanie/img-5917.jpg",
+          "alt": "",
+          "cap": "",
+          "w": 1275,
+          "h": 1700,
+          "meta": {}
+        },
+        {
+          "file": "images/jordanie/img-5216.jpg",
+          "alt": "",
+          "cap": "",
+          "w": 1275,
+          "h": 1700,
+          "meta": {}
+        },
+        {
+          "file": "images/jordanie/img-5974.jpg",
+          "alt": "",
+          "cap": "",
+          "w": 1700,
+          "h": 1275,
+          "meta": {}
+        },
+        {
+          "file": "images/jordanie/img-5960.jpg",
+          "alt": "",
+          "cap": "",
+          "w": 1275,
+          "h": 1700,
+          "meta": {}
+        },
+        {
+          "file": "images/jordanie/img-5893.jpg",
+          "alt": "",
+          "cap": "",
+          "w": 1700,
+          "h": 1275,
+          "meta": {}
+        },
+        {
+          "file": "images/jordanie/img-5905.jpg",
+          "alt": "",
+          "cap": "",
+          "w": 1700,
+          "h": 1275,
+          "meta": {}
+        },
+        {
+          "file": "images/jordanie/img-5929.jpg",
+          "alt": "",
+          "cap": "",
+          "w": 2400,
+          "h": 1800,
+          "meta": {}
+        },
+        {
+          "file": "images/jordanie/img-5968.jpg",
+          "alt": "",
+          "cap": "",
+          "w": 1500,
+          "h": 2000,
+          "meta": {}
+        },
+        {
+          "file": "images/jordanie/img-5927.jpg",
+          "alt": "",
+          "cap": "",
+          "w": 1275,
+          "h": 1700,
+          "meta": {}
+        },
+        {
+          "file": "images/jordanie/img-5536.jpg",
+          "alt": "",
+          "cap": "",
+          "w": 2000,
+          "h": 1500,
+          "meta": {}
+        },
+        {
+          "file": "images/jordanie/img-5965.jpg",
+          "alt": "",
+          "cap": "",
+          "w": 1700,
+          "h": 1275,
+          "meta": {}
+        },
+        {
+          "file": "images/jordanie/img-5979.jpg",
+          "alt": "",
+          "cap": "",
+          "w": 1700,
+          "h": 1275,
+          "meta": {}
+        },
+        {
+          "file": "images/jordanie/img-5937.jpg",
+          "alt": "",
+          "cap": "",
+          "w": 1275,
+          "h": 1700,
+          "meta": {}
+        },
+        {
+          "file": "images/jordanie/img-5911.jpg",
+          "alt": "",
+          "cap": "",
+          "w": 1275,
+          "h": 1700,
+          "meta": {}
+        },
+        {
+          "file": "images/jordanie/img-5914.jpg",
+          "alt": "",
+          "cap": "",
+          "w": 1700,
+          "h": 1275,
+          "meta": {}
+        },
+        {
+          "file": "images/jordanie/img-5935.jpg",
+          "alt": "",
+          "cap": "",
+          "w": 1500,
+          "h": 2000,
+          "meta": {}
+        },
+        {
+          "file": "images/jordanie/img-5922.jpg",
+          "alt": "",
+          "cap": "",
+          "w": 1800,
+          "h": 2400,
+          "meta": {}
+        },
+        {
+          "file": "images/jordanie/img-5925.jpg",
+          "alt": "",
+          "cap": "",
+          "w": 2400,
+          "h": 1800,
+          "meta": {}
+        },
+        {
+          "file": "images/jordanie/img-5890.jpg",
+          "alt": "",
+          "cap": "",
+          "w": 1275,
+          "h": 1700,
+          "meta": {}
+        },
+        {
+          "file": "images/jordanie/img-5939.jpg",
+          "alt": "",
+          "cap": "",
+          "w": 1700,
+          "h": 1275,
+          "meta": {}
+        },
+        {
+          "file": "images/jordanie/img-5953.jpg",
+          "alt": "",
+          "cap": "",
+          "w": 1275,
+          "h": 1700,
+          "meta": {}
+        }
+      ],
+      "notes": []
     }
   ],
   "expositions": [

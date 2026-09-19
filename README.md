@@ -13,6 +13,10 @@ assets/js/globe.js            le globe interactif (intro plein écran et page Ca
 assets/data/countries-110m.json  contours des pays (Natural Earth / world-atlas, domaine public,
                               fond 110m complété par les micro-États du 50m)
 assets/data/countries.json    noms français des pays proposés dans l'administration
+videos/<pays>/*.mp4           les films convertis, et leur image d'affiche
+films/queue/*.json            bons de commande des films en attente de conversion
+.github/workflows/films.yml   le robot qui convertit les films
+.github/scripts/films.js      ce qu'il exécute (ffmpeg, puis mise à jour de la fiche)
 assets/vendor/*.min.js        d3-array, d3-geo, topojson-client — embarqués, aucune dépendance réseau
 images/<pays>/*.jpg           les photos, un sous-dossier par carnet
 ```
@@ -55,6 +59,18 @@ valide, et il se révoque à tout moment.
   territoires, micro-États compris (Bahreïn, Singapour, Malte, Monaco…) : les
   plus petits sont dessinés par une pastille dorée, sans quoi ils feraient un
   pixel et resteraient impossibles à voir comme à cliquer.
+- **Films** : dépose le fichier tel quel, sans rien préparer. Il ne passe pas
+  par le dépôt — GitHub refuse au-delà de 100 Mo — mais par une *release*, qui
+  en accepte 2 Go. Un robot le convertit alors en 1080p pour le web (environ
+  20 Mo la minute, treize fois plus léger qu'un fichier de caméra), en tire une
+  image d'affiche, le range dans `videos/<pays>/` et l'inscrit dans le carnet.
+  Compte quelques minutes ; l'administration affiche « en conversion », puis le
+  film apparaît après un rechargement. En cas d'échec, la raison s'affiche à la
+  place.
+  Sur le site, le film s'ouvre le carnet, à la même largeur que les photos.
+  Seule l'image d'affiche est chargée : **aucun octet de film n'est téléchargé
+  tant que personne n'appuie sur lecture**. Un visiteur qui fait défiler ne paie
+  rien.
 - **Ordre des carnets** : automatique. L'accueil et la légende de la carte
   classent du voyage le plus récent au plus ancien, comme la chronologie —
   l'ordre dans lequel tu crées les carnets n'a donc aucune importance. Un

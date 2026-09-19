@@ -43,7 +43,7 @@
         '<div class="carnet-thumb"><img src="' + item.thumb + '" alt="" loading="lazy" decoding="async"></div>' +
         "<div class=\"carnet-body\">" +
           '<div class="carnet-title serif">' + esc(item.title) + "</div>" +
-          '<div class="carnet-meta">' + esc(item.place) + (item.photos ? " · " + item.photos.length + " photographies" : "") + "</div>" +
+          '<div class="carnet-meta">' + esc(item.place) + (item.photos ? " · " + item.photos.length + " photographies" : "") + mentionFilms(item) + "</div>" +
         "</div>" +
         '<div class="carnet-tags">' + ((item.tags || []).map(function (t) { return '<span class="carnet-tag glass">' + esc(t) + "</span>"; }).join("")) + "</div>" +
         '<span class="carnet-go" aria-hidden="true">↗</span>' +
@@ -113,6 +113,62 @@
     }).join("");
   }
 
+  // Un film ne coûte rien tant qu'on ne le regarde pas : la page n'affiche
+  // que l'image d'affiche, et l'élément vidéo n'est créé qu'au clic. Aucun
+  // octet de film n'est téléchargé par qui se contente de faire défiler.
+  function dureeTexte(s) {
+    if (!s) return "";
+    var m = Math.floor(s / 60), r = Math.round(s % 60);
+    return m + ":" + (r < 10 ? "0" : "") + r;
+  }
+
+  function filmHTML(f) {
+    var ar = f.w && f.h ? (f.w / f.h).toFixed(4) : "1.7778";
+    var duree = dureeTexte(f.dur);
+    return '<figure class="film reveal" style="--ar:' + ar + '">' +
+      '<div class="film-frame">' +
+        '<img class="film-poster" src="' + esc(f.poster || "") + '" alt=""' +
+          (f.w ? ' width="' + f.w + '" height="' + f.h + '"' : "") +
+          ' loading="lazy" decoding="async">' +
+        '<button class="film-play" data-film="' + esc(f.file) + '"' +
+          ' aria-label="Lire le film' + (f.cap ? " : " + esc(f.cap) : "") + '">' +
+          '<span class="film-pill glass">' + (duree ? "Film · " + duree : "Film") + "</span>" +
+        "</button>" +
+      "</div>" +
+      (f.cap ? '<figcaption class="film-cap">' + esc(f.cap) + "</figcaption>" : "") +
+      "</figure>";
+  }
+
+  // Au clic seulement : on remplace l'affiche par un vrai lecteur.
+  function lancerFilm(bouton) {
+    var cadre = bouton.parentNode;
+    var affiche = cadre.querySelector(".film-poster");
+    var v = document.createElement("video");
+    v.className = "film-video";
+    v.src = bouton.getAttribute("data-film");
+    v.controls = true;
+    v.preload = "auto";
+    // Sans playsinline, iOS bascule en plein écran et sort de la page.
+    v.setAttribute("playsinline", "");
+    if (affiche) v.setAttribute("poster", affiche.getAttribute("src"));
+    cadre.innerHTML = "";
+    cadre.appendChild(v);
+    var joue = v.play();
+    // Un navigateur qui refuse la lecture automatique n'est pas une panne :
+    // les commandes sont là, le visiteur appuie lui-même.
+    if (joue && joue.catch) joue.catch(function () {});
+  }
+
+  function filmsHTML(c) {
+    return (c.films || []).map(filmHTML).join("");
+  }
+
+  // Mention « film » dans les listes, pour qu'on sache avant d'ouvrir.
+  function mentionFilms(c) {
+    var n = (c.films || []).length;
+    return n ? " · " + n + " film" + (n > 1 ? "s" : "") : "";
+  }
+
   // ---------- Vues ----------
 
   // Le héros de l'accueil est tiré au sort parmi toutes les photos du site,
@@ -179,8 +235,11 @@
           '<div class="essay-sub"><span>' + esc(c.place) + "</span>" +
             (c.subtitle ? "<span>" + esc(c.subtitle) + "</span>" : "") +
             "<span>" + c.photos.length + " photographies</span>" +
+            ((c.films || []).length ? "<span>" + (c.films || []).length + " film" +
+              ((c.films || []).length > 1 ? "s" : "") + "</span>" : "") +
             "<span>" + c.year + "</span></div>" +
         "</div>" +
+        filmsHTML(c) +
         photosEssayHTML(c.photos, c.notes, 0) +
         '<div class="essay-end"><span>' + esc(c.title) + " — " + c.year + "</span>" +
           '<a href="#home" class="to-back serif" data-nav="home">Retour aux carnets ↰</a></div>' +
@@ -343,7 +402,7 @@
               '<h2 class="serif">' + esc(t.carnet.title) + "</h2>" +
               '<p class="tl-dates">' + esc(formatPeriod(t.from, t.to)) + "</p>" +
               '<p class="tl-meta">' + esc(t.carnet.place) + " · " + days + " jour" + (days > 1 ? "s" : "") +
-                " · " + (t.carnet.photos || []).length + " photographies</p>" +
+                " · " + (t.carnet.photos || []).length + " photographies" + mentionFilms(t.carnet) + "</p>" +
             "</div>" +
             '<span class="tl-go" aria-hidden="true">↗</span>' +
           "</a>" +
@@ -539,6 +598,14 @@
   }
 
   document.addEventListener("click", function (e) {
+    // Le film passe avant la navigation : son bouton vit à l'intérieur d'une
+    // page de carnet, il ne doit pas déclencher un changement de vue.
+    var play = e.target.closest(".film-play");
+    if (play) {
+      e.preventDefault();
+      lancerFilm(play);
+      return;
+    }
     var el = e.target.closest("[data-nav]");
     if (el) {
       e.preventDefault();

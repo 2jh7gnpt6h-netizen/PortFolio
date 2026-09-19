@@ -19,7 +19,7 @@
   // un onglet resté ouvert avec du code périmé republierait le fichier sans
   // les champs qu'il ignore, effaçant silencieusement des données. On refuse
   // donc de publier un fichier plus récent que ce que cette page sait lire.
-  var SCHEMA = 2;
+  var SCHEMA = 3;
   // On vise un poids de fichier plutôt qu'une qualité fixe : à qualité
   // constante une photo détaillée pèse deux fois plus qu'une photo douce, et
   // c'est le poids qui ralentit le site et fait échouer les gros envois.
@@ -55,7 +55,8 @@
     doomedFiles: new Set(),    // chemins dont la suppression est demandée
     dirty: false,
     selectedCarnet: 0,
-    selectedExpo: 0
+    selectedExpo: 0,
+    filmsEnAttente: []          // bons de commande en cours de conversion
   };
 
   var $ = function (id) { return document.getElementById(id); };
@@ -179,6 +180,11 @@
       state.doomedFiles.clear();
       setDirty(false);
       showWorkspace();
+      // Les films en cours de conversion ne bloquent pas l'affichage : ils
+      // s'ajoutent dès qu'on les connaît.
+      chargerFileFilms().then(function () {
+        if (currentCarnet()) renderFilms(currentCarnet());
+      });
     });
   }
 
@@ -378,6 +384,16 @@
         '<p class="progress" id="photoProgress" hidden></p>' +
       "</div>" +
 
+      '<div class="block"><div class="block-head"><h3>Films</h3>' +
+        '<span><input type="file" id="addFilm" accept="video/*" hidden>' +
+        '<button class="btn small" id="addFilmBtn">Déposer un film</button></span></div>' +
+        '<p class="muted small" style="margin-bottom:10px;">Le fichier part tel quel, ' +
+        'sans rien préparer : il est converti sur les serveurs de GitHub en une version ' +
+        'légère pour le web (environ 20 Mo la minute). Comptez quelques minutes.</p>' +
+        '<div id="filmList"></div>' +
+        '<p class="progress" id="filmProgress" hidden></p>' +
+      "</div>" +
+
       '<div class="block"><div class="block-head"><h3>Périodes du voyage</h3>' +
         '<button class="btn small" id="addTrip">Ajouter une période</button></div>' +
         '<p class="muted small" style="margin-bottom:10px;">Un pays visité deux fois ' +
@@ -401,6 +417,11 @@
     });
 
     $("addPhotosBtn").addEventListener("click", function () { $("addPhotos").click(); });
+    $("addFilmBtn").addEventListener("click", function () { $("addFilm").click(); });
+    $("addFilm").addEventListener("change", function (e) {
+      if (e.target.files && e.target.files[0]) deposerFilm(c, e.target.files[0]);
+      e.target.value = "";
+    });
     $("addPhotos").addEventListener("change", function (e) { addPhotos(c, e.target.files); });
     $("addTrip").addEventListener("click", function () {
       c.trips = c.trips || [];
@@ -421,6 +442,7 @@
     });
 
     renderPhotoGrid(c);
+    renderFilms(c);
     renderTrips(c);
     renderNotes(c);
   }
@@ -561,6 +583,183 @@
         toast(files.length + " photo" + (files.length > 1 ? "s" : "") + " prête" +
           (files.length > 1 ? "s" : "") + " — " + Math.round(saved / 1024 / 1024 * 10) / 10 + " Mo économisés");
       })["catch"](function (e) { prog.hidden = true; toast(e.message, true); });
+  }
+
+  // ---------- Films ----------
+  //
+  // Un film brut pèse trop lourd pour le dépôt : GitHub refuse au-delà de
+  // 100 Mo. On le range donc dans une « release », qui en accepte 2 Go, puis
+  // on dépose un bon de commande minuscule dans le dépôt. C'est ce bon qui
+  // réveille le robot chargé de la conversion.
+  var TAG_FILMS = "films-raw";
+  var LIMITE_BRUT = 2 * 1024 * 1024 * 1024;
+
+  function releaseFilms() {
+    return gh(repoPath("/releases/tags/" + TAG_FILMS)).catch(function (err) {
+      if (err.status !== 404) throw err;
+      return gh(repoPath("/releases"), {
+        method: "POST",
+        body: {
+          tag_name: TAG_FILMS,
+          name: "Films bruts (stockage temporaire)",
+          body: "Dépôt technique des films avant conversion. Les fichiers sont effacés une fois convertis.",
+          prerelease: true
+        }
+      });
+    });
+  }
+
+  // XHR plutôt que fetch : lui seul rend compte de l'avancement d'un envoi,
+  // et sur plusieurs centaines de méga-octets on ne peut pas laisser
+  // quelqu'un devant un écran muet.
+  function envoyerBrut(release, nom, fichier, onProgres) {
+    return new Promise(function (resolve, reject) {
+      var url = "https://uploads.github.com/repos/" + repo.owner + "/" + repo.name +
+        "/releases/" + release.id + "/assets?name=" + encodeURIComponent(nom);
+      var xhr = new XMLHttpRequest();
+      xhr.open("POST", url, true);
+      xhr.setRequestHeader("Authorization", "Bearer " + state.token);
+      xhr.setRequestHeader("Accept", "application/vnd.github+json");
+      xhr.setRequestHeader("Content-Type", fichier.type || "application/octet-stream");
+      xhr.upload.onprogress = function (e) {
+        if (e.lengthComputable && onProgres) onProgres(e.loaded / e.total);
+      };
+      xhr.onload = function () {
+        if (xhr.status >= 200 && xhr.status < 300) {
+          try { resolve(JSON.parse(xhr.responseText)); }
+          catch (e) { reject(new Error("réponse illisible de GitHub")); }
+          return;
+        }
+        var detail = "";
+        try { detail = (JSON.parse(xhr.responseText) || {}).message || ""; } catch (e) {}
+        reject(new Error("l'envoi du film a été refusé : " + (detail || xhr.status)));
+      };
+      // Un échec ici est presque toujours un refus du navigateur (CORS) ou une
+      // coupure réseau : on le dit franchement plutôt que « erreur inconnue ».
+      xhr.onerror = function () {
+        reject(new Error("l'envoi n'a pas pu aboutir — connexion interrompue, " +
+          "ou GitHub a refusé la requête depuis le navigateur"));
+      };
+      xhr.onabort = function () { reject(new Error("envoi interrompu")); };
+      xhr.send(fichier);
+    });
+  }
+
+  function deposerBon(id, bon) {
+    var chemin = "films/queue/" + id + ".json";
+    return gh(repoPath("/contents/" + chemin), {
+      method: "PUT",
+      body: {
+        message: "Film déposé depuis l'administration",
+        content: btoa(unescape(encodeURIComponent(JSON.stringify(bon, null, 1)))),
+        branch: BRANCH
+      }
+    });
+  }
+
+  function deposerFilm(c, fichier) {
+    if (fichier.size > LIMITE_BRUT) {
+      toast("Ce film dépasse 2 Go, la limite de GitHub. Il faut le raccourcir.", true);
+      return;
+    }
+    var suivi = $("filmProgress");
+    var id = (slugify(c.slug) || "film") + "-" + Date.now().toString(36);
+    var ext = (fichier.name.match(/\.[a-zA-Z0-9]+$/) || [".mp4"])[0].toLowerCase();
+    var mo = Math.round(fichier.size / 1048576);
+
+    var dire = function (t) { if (suivi) { suivi.hidden = false; suivi.textContent = t; } };
+    dire("Préparation…");
+
+    releaseFilms()
+      .then(function (rel) {
+        return envoyerBrut(rel, id + ext, fichier, function (part) {
+          dire("Envoi du film (" + mo + " Mo) : " + Math.round(part * 100) + " %");
+        });
+      })
+      .then(function (asset) {
+        dire("Mise en file d'attente…");
+        return deposerBon(id, {
+          id: id, slug: c.slug, assetId: asset.id, nom: fichier.name, cap: ""
+        });
+      })
+      .then(function () {
+        state.filmsEnAttente.push({ id: id, slug: c.slug, nom: fichier.name });
+        if (suivi) suivi.hidden = true;
+        toast("Film déposé. La conversion démarre, comptez quelques minutes.");
+        renderFilms(c);
+      })
+      .catch(function (err) {
+        if (suivi) suivi.hidden = true;
+        toast("Dépôt impossible : " + explain(err), true);
+      });
+  }
+
+  // Les bons en attente vivent dans le dépôt, pas dans la fiche du site :
+  // on va les lire pour savoir ce qui mijote (et ce qui a échoué).
+  function chargerFileFilms() {
+    return gh(repoPath("/contents/films/queue"))
+      .then(function (liste) {
+        var bons = (liste || []).filter(function (f) { return /\.json$/.test(f.name); });
+        return Promise.all(bons.map(function (f) {
+          return gh(repoPath("/contents/" + f.path)).then(function (d) {
+            try { return JSON.parse(decodeURIComponent(escape(atob((d.content || "").replace(/\s/g, ""))))); }
+            catch (e) { return null; }
+          }).catch(function () { return null; });
+        }));
+      })
+      .then(function (bons) {
+        state.filmsEnAttente = bons.filter(Boolean);
+      })
+      .catch(function () { state.filmsEnAttente = []; });
+  }
+
+  function renderFilms(c) {
+    var box = $("filmList");
+    if (!box) return;
+    var films = c.films || [];
+    var attente = (state.filmsEnAttente || []).filter(function (b) { return b && b.slug === c.slug; });
+
+    if (!films.length && !attente.length) {
+      box.innerHTML = '<p class="empty">Aucun film pour ce pays.</p>';
+      return;
+    }
+
+    box.innerHTML =
+      attente.map(function (b) {
+        var souci = b.erreur;
+        return '<div class="film-line' + (souci ? " is-error" : "") + '">' +
+          '<span class="film-state">' + (souci ? "Échec" : "En conversion…") + "</span>" +
+          '<span class="film-name">' + esc(b.nom || b.id) + "</span>" +
+          (souci ? '<span class="film-why">' + esc(b.erreur) + "</span>" : "") +
+        "</div>";
+      }).join("") +
+      films.map(function (f, i) {
+        return '<div class="film-line">' +
+          '<img class="film-mini" src="' + esc(photoSrc(f.poster)) + '" alt="">' +
+          '<label class="field film-cap-field"><span>Légende</span>' +
+            '<input type="text" data-film="' + i + '" value="' + esc(f.cap || "") + '"></label>' +
+          '<span class="film-dur">' + (f.dur ? Math.floor(f.dur / 60) + ":" +
+            (f.dur % 60 < 10 ? "0" : "") + (f.dur % 60) : "") + "</span>" +
+          '<button class="btn danger small" data-delfilm="' + i + '">Retirer</button>' +
+        "</div>";
+      }).join("");
+
+    box.querySelectorAll("[data-film]").forEach(function (el) {
+      el.addEventListener("input", function () {
+        films[+el.dataset.film].cap = el.value;
+        touch();
+      });
+    });
+    box.querySelectorAll("[data-delfilm]").forEach(function (el) {
+      el.addEventListener("click", function () {
+        var f = films[+el.dataset.delfilm];
+        if (!confirm("Retirer ce film du site ?")) return;
+        if (f.file) state.doomedFiles.add(f.file);
+        if (f.poster) state.doomedFiles.add(f.poster);
+        films.splice(+el.dataset.delfilm, 1);
+        touch(); renderFilms(c);
+      });
+    });
   }
 
   function renderNotes(c) {

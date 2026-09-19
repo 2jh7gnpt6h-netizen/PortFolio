@@ -1,0 +1,58 @@
+# Convertit les films déposés depuis l'administration.
+#
+# Le fichier brut ne passe jamais par le dépôt : il est trop lourd (GitHub
+# refuse au-delà de 100 Mo). L'administration l'envoie dans une « release »,
+# qui accepte 2 Go, puis dépose ici un simple bon de commande. C'est ce bon,
+# minuscule, qui déclenche la conversion.
+name: Convertir les films
+
+on:
+  push:
+    paths:
+      - "films/queue/*.json"
+
+# Le robot écrit le film converti et la fiche du site.
+permissions:
+  contents: write
+
+# Deux dépôts coup sur coup ne doivent pas se marcher dessus en écrivant
+# content.json chacun de leur côté.
+concurrency:
+  group: films
+  cancel-in-progress: false
+
+jobs:
+  convertir:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Installer ffmpeg
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends ffmpeg
+
+      - name: Convertir les films en attente
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_REPO: ${{ github.repository }}
+        run: node .github/scripts/films.js
+
+      - name: Publier le résultat
+        run: |
+          if [ -z "$(git status --porcelain)" ]; then
+            echo "Rien à publier."
+            exit 0
+          fi
+          git config user.name "Robot des films"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -m "Conversion des films déposés depuis l'administration"
+          # Le dépôt a pu bouger pendant la conversion (une publication depuis
+          # l'administration, par exemple) : on rejoue par-dessus.
+          for i in 1 2 3 4 5; do
+            git pull --rebase origin "${GITHUB_REF_NAME}" && git push origin "HEAD:${GITHUB_REF_NAME}" && exit 0
+            echo "Nouvelle tentative ($i)…"
+            sleep $((i * 4))
+          done
+          exit 1
